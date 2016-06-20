@@ -1,5 +1,3 @@
-require_relative './de/basic.rb'
-
 require_relative './de/initial_vector_creator.rb'
 require_relative './de/mutated_vector_creator.rb'
 require_relative './de/crossover_executor.rb'
@@ -8,15 +6,16 @@ require_relative './de/selection_executor.rb'
 class DE
   DEFAULT_OPTION = {
     dimension: 2,
-    number_of_vectors: 100,
+    number_of_vectors: 105,
     max_generation: 1000,
+    max_evaluation: 100000,
     initial_value_min: -100,
     initial_value_max: 100,
     mutation_magnification_rate: 0.5,
     crossover_use_mutated_component_rate: 0.5
   }
 
-  attr_reader :f, :vectors, :min_vector, :time
+  attr_reader :f, :vectors, :min_vector, :time, :generation, :evaluation_count
   attr_reader *DEFAULT_OPTION.keys
 
   def initialize(f, option = {})
@@ -24,12 +23,25 @@ class DE
       raise 'DE initialize must be passed the benchmark func as the first argument.'
     end
 
+    @generation, @evaluation_count = 1, 0
     @f = f
     set_option(DEFAULT_OPTION.merge(f.option).merge(option))
   end
 
   def exec
-    raise 'DE#execute must be overridden.'
+    @time = Benchmark.realtime do
+      set_initial_vectors
+
+      loop do
+        break if generation >= max_generation || evaluation_count >= max_evaluation
+        exec_mutation
+        exec_crossover
+        exec_selection
+        @generation += 1
+      end
+    end
+
+    log_result
   end
 
   private
@@ -61,10 +73,13 @@ class DE
   end
 
   def exec_selection
-    @vectors = DE::SelectionExecutor.create_selected_vectors \
+    selection_executor = DE::SelectionExecutor.new \
       parents: @vectors,
       children: @children_vectors,
-      f: f
+      f: f,
+      evaluation_rest: max_evaluation - @evaluation_count
+    @vectors = selection_executor.create_selected_vectors
+    @evaluation_count += selection_executor.evaluation_count
     @min_vector = @vectors.min { |a, b| a.calculated_value <=> b.calculated_value }
   end
 
@@ -72,7 +87,8 @@ class DE
     puts <<~EOS
       dimension: #{dimension}
       number_of_vectors: #{number_of_vectors}
-      generation: #{max_generation}
+      generation: #{generation}
+      evaluation: #{evaluation_count}
       function: #{f.class}
       mutation_magnification_rate: #{mutation_magnification_rate}
       crossover_use_mutated_component_rate: #{crossover_use_mutated_component_rate}
