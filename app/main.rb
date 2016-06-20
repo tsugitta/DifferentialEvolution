@@ -5,4 +5,3 @@ require_relative './de.rb'
 f = Benchmark::F1.new
 de = DE::Basic.new(f)
 de.exec
-
