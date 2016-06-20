@@ -1,5 +1,10 @@
 require_relative './de/basic.rb'
 
+require_relative './de/initial_vector_creator.rb'
+require_relative './de/mutated_vector_creator.rb'
+require_relative './de/crossover_executor.rb'
+require_relative './de/selection_executor.rb'
+
 class DE
   DEFAULT_OPTION = {
     dimension: 2,
@@ -53,5 +58,12 @@ class DE
       parent_vectors: @vectors,
       mutated_vectors: @mutated_vectors,
       use_mutated_component_rate: crossover_use_mutated_component_rate
+  end
+
+  def exec_selection
+    @vectors = DE::SelectionExecutor.create_selected_vectors \
+      parents: @vectors,
+      children: @children_vectors,
+      f: f
   end
 end
