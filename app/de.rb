@@ -16,7 +16,7 @@ class DE
     crossover_use_mutated_component_rate: 0.5
   }
 
-  attr_reader :f, :vectors
+  attr_reader :f, :vectors, :min_vector, :time
   attr_reader *DEFAULT_OPTION.keys
 
   def initialize(f, option = {})
@@ -65,5 +65,21 @@ class DE
       parents: @vectors,
       children: @children_vectors,
       f: f
+    @min_vector = @vectors.min { |a, b| a.calculated_value <=> b.calculated_value }
+  end
+
+  def log_result
+    puts <<~EOS
+      dimension: #{dimension}
+      number_of_vectors: #{number_of_vectors}
+      generation: #{max_generation}
+      function: #{f.class}
+      mutation_magnification_rate: #{mutation_magnification_rate}
+      crossover_use_mutated_component_rate: #{crossover_use_mutated_component_rate}
+
+      min: #{min_vector.calculated_value}
+      vector: #{min_vector}
+      time: #{time}s
+    EOS
   end
 end

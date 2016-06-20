@@ -17,8 +17,7 @@ class DE::SelectionExecutor
 
     vector_count.times do |i|
       p_v, c_v = @parents[i], @children[i]
-      [p_v, c_v].each { |v| v.calculate_with(@f) }
-      selected_vector = p_v.calculated_value < c_v.calculated_value ? p_v : c_v
+      selected_vector = p_v.calculate_with(@f) < c_v.calculate_with(@f) ? p_v : c_v
       selected_vectors << selected_vector
     end
 
