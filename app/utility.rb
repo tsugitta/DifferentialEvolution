@@ -1,2 +1,2 @@
-require 'pry-rails' # debug
-require 'matrix'    # vector, matrix etc.
+require 'pry'    # debug
+require 'matrix' # vector, matrix etc.
