@@ -6,7 +6,8 @@ class DE
     number_of_vectors: 100,
     max_generation: 10000,
     initial_value_min: -100,
-    initial_value_max: 100
+    initial_value_max: 100,
+    mutation_magnification_rate: 0.5
   }
 
   attr_reader :f, :vectors
@@ -39,5 +40,10 @@ class DE
       dimension: dimension,
       min: initial_value_min,
       max: initial_value_max
+  end
+
+  def exec_mutation
+    @mutated_vectors = DE::MutatedVectorCreator
+      .create_from(@vectors, magnification_rate: mutation_magnification_rate)
   end
 end
