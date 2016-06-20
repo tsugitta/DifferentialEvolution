@@ -1,5 +1,3 @@
-require 'matrix'
-
 class Benchmark end
 
 # Sphere

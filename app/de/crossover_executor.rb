@@ -1,5 +1,3 @@
-require 'matrix'
-
 class DE end
 
 class DE::CrossoverExecutor
