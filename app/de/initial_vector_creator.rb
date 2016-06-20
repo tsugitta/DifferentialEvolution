@@ -17,7 +17,9 @@ class DE::InitialVectorCreator
 
   def create(length)
     Array.new(length) do
-      Vector.elements(Array.new(@dimension) { Random.rand(@min..@max) }, false)
+      Vector.elements \
+        Array.new(@dimension) { Random.rand(@min..@max) },
+        false
     end
   end
 end
