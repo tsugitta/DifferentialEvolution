@@ -4,10 +4,11 @@ class DE
   DEFAULT_OPTION = {
     dimension: 2,
     number_of_vectors: 100,
-    max_generation: 10000,
+    max_generation: 1000,
     initial_value_min: -100,
     initial_value_max: 100,
-    mutation_magnification_rate: 0.5
+    mutation_magnification_rate: 0.5,
+    crossover_use_mutated_component_rate: 0.5
   }
 
   attr_reader :f, :vectors
@@ -45,5 +46,12 @@ class DE
   def exec_mutation
     @mutated_vectors = DE::MutatedVectorCreator
       .create_from(@vectors, magnification_rate: mutation_magnification_rate)
+  end
+
+  def exec_crossover
+    @children_vectors = DE::CrossoverExecutor.create_children \
+      parent_vectors: @vectors,
+      mutated_vectors: @mutated_vectors,
+      use_mutated_component_rate: crossover_use_mutated_component_rate
   end
 end
