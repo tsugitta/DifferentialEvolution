@@ -1,7 +1,7 @@
-class Benchmark end
+class BenchmarkFunction end
 
 # Sphere
-class Benchmark::F1 < Benchmark
+class BenchmarkFunction::F1 < BenchmarkFunction
   def option
     {
       initial_value_min: -100,
