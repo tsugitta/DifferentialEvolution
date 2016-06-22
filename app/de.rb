@@ -19,7 +19,7 @@ class DE
   attr_reader *DEFAULT_OPTION.keys
 
   def initialize(f, option = {})
-    if f == nil || !f.is_a?(BenchmarkFunction)
+    unless f.is_a?(BenchmarkFunction)
       raise 'DE initialize must be passed the benchmark func as the first argument.'
     end
 
