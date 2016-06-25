@@ -28,7 +28,7 @@ class DE::SelectionExecutor
     end
 
     return selected_vectors if selected_vectors.size == vector_count
-    selected_vectors + @parents[selected_vectors.size..@parents.size]
+    selected_vectors + @parents[selected_vectors.size..-1]
   end
 
   private
