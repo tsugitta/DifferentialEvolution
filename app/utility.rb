@@ -1,5 +1,4 @@
 require 'pry'
-require 'libsvm'
 require 'matrix'
 require 'benchmark'
 
