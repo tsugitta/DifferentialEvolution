@@ -6,13 +6,12 @@ class DE::CrossoverExecutor
       parent_vectors: parent_vectors,
       mutated_vectors: mutated_vectors,
       use_mutated_component_rate: use_mutated_component_rate,
-      crossover_method: :binomial
+      crossover_method: crossover_method
     ).create_children
   end
 
   def initialize(parent_vectors: nil, mutated_vectors: nil, use_mutated_component_rate: nil, crossover_method: :binomial)
     raise 'parent and mutated vectors must be passed' if parent_vectors == nil || mutated_vectors == nil
-    raise 'use_mutated_component_rate must be passed' if use_mutated_component_rate == nil
     @parent_vectors = parent_vectors
     @mutated_vectors = mutated_vectors
     @use_mutated_component_rate = use_mutated_component_rate
@@ -79,6 +78,7 @@ class DE::CrossoverExecutor
   end
 
   def use_mutated_component?
+    raise 'use_mutated_component_rate must be passed' if @use_mutated_component_rate == nil
     rand < @use_mutated_component_rate
   end
 end

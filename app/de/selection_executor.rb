@@ -22,8 +22,7 @@ class DE::SelectionExecutor
       break if @evaluation_count >= @evaluation_rest
       evaluate(c_v)
 
-      selected_vector = p_v.calculated_value < c_v.calculated_value ? p_v : c_v
-      selected_vectors << selected_vector
+      selected_vectors << better_vector(p_v, c_v)
       break if @evaluation_count >= @evaluation_rest
     end
 
@@ -32,6 +31,10 @@ class DE::SelectionExecutor
   end
 
   private
+
+  def better_vector(p_v, c_v)
+    p_v.calculated_value < c_v.calculated_value ? p_v : c_v
+  end
 
   def vector_count
     @vector_count ||= @parents.size

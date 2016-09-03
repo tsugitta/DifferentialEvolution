@@ -6,7 +6,7 @@ require_relative './de/selection_executor.rb'
 class DE
   DEFAULT_OPTION = {
     dimension: 2,
-    number_of_vectors: 100,
+    number_of_vectors: 50,
     max_generation: 1000,
     max_evaluation: 100000,
     initial_value_min: -100,
@@ -34,6 +34,7 @@ class DE
 
       loop do
         break if generation >= max_generation || evaluation_count >= max_evaluation
+        exec_initial_setup
         exec_mutation
         exec_crossover
         exec_selection
@@ -58,6 +59,10 @@ class DE
       dimension: dimension,
       min: initial_value_min,
       max: initial_value_max
+  end
+
+  def exec_initial_setup
+    # override this if there is need to do something at begininng of each generation
   end
 
   def exec_mutation

@@ -2,11 +2,10 @@ class DE end
 
 class DE::MutatedVectorCreator
   def self.create_from(vectors, magnification_rate: nil, mutation_method: :rand_1, p: nil, f: nil, archived_vectors: nil)
-    new(vectors, magnification_rate: magnification_rate, mutation_method: :rand_1).create
+    new(vectors, magnification_rate: magnification_rate, mutation_method: mutation_method, p: p, f: f, archived_vectors: archived_vectors).create
   end
 
   def initialize(vectors, magnification_rate: nil, mutation_method: :rand_1, p: nil, f: nil, archived_vectors: nil)
-    raise 'Mutation\'s magnification_rate must be specified.' if magnification_rate == nil
     @vectors = vectors
     @magnification_rate = magnification_rate
     @mutation_method = mutation_method
@@ -31,6 +30,7 @@ class DE::MutatedVectorCreator
   private
 
   def rand_1_mutated_vectors
+    raise 'Mutation\'s magnification_rate must be specified.' if @magnification_rate == nil
     mutated_vectors = []
 
     @vectors.each do |parent_v|
@@ -43,6 +43,7 @@ class DE::MutatedVectorCreator
   end
 
   def rand_2_mutated_vectors
+    raise 'Mutation\'s magnification_rate must be specified.' if magnification_rate == nil
     mutated_vectors = []
 
     @vectors.each do |parent_v|
@@ -64,12 +65,17 @@ class DE::MutatedVectorCreator
     v_b_candidates = @vectors + @archived_vectors
 
     @vectors.each do |parent_v|
-      v_p = p_candidates.sample
-      v_a = select_vectors_except(parent_v, 1).first
-      v_b = v_b_candidates.sample
-      mutated_vector = parent_v + (v_p - parent_v) * @magnification_rate + (v_a - v_b)
-      mutated_vectors << mutated_vector
+      mutated_vectors << current_to_pbest_1_mutated_vector(parent_v, p_candidates, v_b_candidates)
     end
+
+    mutated_vectors
+  end
+
+  def current_to_pbest_1_mutated_vector(parent_v, p_candidates, v_b_candidates)
+    v_p = p_candidates.sample
+    v_a = select_vectors_except(parent_v, 1).first
+    v_b = v_b_candidates.sample
+    parent_v + (v_p - parent_v) * @magnification_rate + (v_a - v_b) * @magnification_rate
   end
 
   def select_vectors_except(parent_v, count)
@@ -81,7 +87,7 @@ class DE::MutatedVectorCreator
 
   def vectors_sorted_desc_by_score
     @vectors.sort do |v_a, v_b|
-      v_a.calculated_with(@f) <=> v_b.calculated_with(@f) # the lower value, the higher score
+      v_a.calculate_with(@f) <=> v_b.calculate_with(@f) # the lower value, the higher score
     end
   end
 
