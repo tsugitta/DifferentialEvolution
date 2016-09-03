@@ -1,21 +1,40 @@
 class DE end
 
 class DE::MutatedVectorCreator
-  def self.create_from(vectors, magnification_rate: nil)
-    new(vectors, magnification_rate: magnification_rate).create
+  def self.create_from(vectors, magnification_rate: nil, mutation_method: :rand_1, p: nil, f: nil, archived_vectors: nil)
+    new(vectors, magnification_rate: magnification_rate, mutation_method: :rand_1).create
   end
 
-  def initialize(vectors, magnification_rate: nil)
+  def initialize(vectors, magnification_rate: nil, mutation_method: :rand_1, p: nil, f: nil, archived_vectors: nil)
     raise 'Mutation\'s magnification_rate must be specified.' if magnification_rate == nil
     @vectors = vectors
     @magnification_rate = magnification_rate
+    @mutation_method = mutation_method
+    @p = p
+    @f = f
+    @archived_vectors = archived_vectors
   end
 
   def create
+    case @mutation_method
+    when :rand_1
+      rand_1_mutated_vectors
+    when :rand_2
+      rand_2_mutated_vectors
+    when :current_to_pbest_1
+      current_to_pbest_1_mutated_vectors
+    else
+      raise "mutation_method: '#{@mutation_method}' is invalid."
+    end
+  end
+
+  private
+
+  def rand_1_mutated_vectors
     mutated_vectors = []
 
     @vectors.each do |parent_v|
-      v_a, v_b, v_c = select_three_vectors_except(parent_v)
+      v_a, v_b, v_c = select_vectors_except(parent_v, 3)
       mutated_vector = v_a + (v_b - v_c) * @magnification_rate
       mutated_vectors << mutated_vector
     end
@@ -23,12 +42,50 @@ class DE::MutatedVectorCreator
     mutated_vectors
   end
 
-  private
+  def rand_2_mutated_vectors
+    mutated_vectors = []
 
-  def select_three_vectors_except(parent_v)
-    selected_vectors_with_rest = @vectors.sample(4)
+    @vectors.each do |parent_v|
+      v_a, v_b, v_c, v_d, v_e = select_vectors_except(parent_v, 5)
+      mutated_vector = v_a + (v_b - v_c) * @magnification_rate + (v_d - v_e) * @magnification_rate
+      mutated_vectors << mutated_vector
+    end
+
+    mutated_vectors
+  end
+
+  def current_to_pbest_1_mutated_vectors
+    raise 'p must be passed if using pbest.' if @p == nil
+    raise 'f must be passed if using pbest.' if @f == nil
+    raise 'archived_vectors must be passed if using pbest.' if @archived_vectors == nil
+
+    mutated_vectors = []
+    p_candidates = vectors_sorted_desc_by_score.first([(@p * vector_size).floor, 2].max)
+    v_b_candidates = @vectors + @archived_vectors
+
+    @vectors.each do |parent_v|
+      v_p = p_candidates.sample
+      v_a = select_vectors_except(parent_v, 1).first
+      v_b = v_b_candidates.sample
+      mutated_vector = parent_v + (v_p - parent_v) * @magnification_rate + (v_a - v_b)
+      mutated_vectors << mutated_vector
+    end
+  end
+
+  def select_vectors_except(parent_v, count)
+    selected_vectors_with_rest = @vectors.sample(count + 1)
     selected_vectors_with_rest
       .reject { |v| v == parent_v }
-      .sample(3)
+      .sample(count)
+  end
+
+  def vectors_sorted_desc_by_score
+    @vectors.sort do |v_a, v_b|
+      v_a.calculated_with(@f) <=> v_b.calculated_with(@f) # the lower value, the higher score
+    end
+  end
+
+  def vector_size
+    @vector_size ||= @vectors.size
   end
 end
