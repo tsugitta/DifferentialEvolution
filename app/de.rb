@@ -34,10 +34,11 @@ class DE
 
       loop do
         break if generation >= max_generation || evaluation_count >= max_evaluation
-        exec_initial_setup
+        exec_initialization_of_beginning_generation
         exec_mutation
         exec_crossover
         exec_selection
+        exec_termination_of_ending_generation
         @generation += 1
       end
     end
@@ -54,23 +55,23 @@ class DE
   end
 
   def set_initial_vectors
-    @vectors = DE::InitialVectorCreator.new(
+    @vectors = (self.class)::InitialVectorCreator.new(
       dimension: dimension,
       min: initial_value_min,
       max: initial_value_max
     ).create(number_of_vectors)
   end
 
-  def exec_initial_setup
+  def exec_initialization_of_beginning_generation
     # override this if there is need to do something at begininng of each generation
   end
 
   def exec_mutation
-    @mutated_vectors = DE::MutatedVectorCreator.new(@vectors, magnification_rate: mutation_magnification_rate).create
+    @mutated_vectors = (self.class)::MutatedVectorCreator.new(@vectors, magnification_rate: mutation_magnification_rate).create
   end
 
   def exec_crossover
-    @children_vectors = DE::CrossoverExecutor.new(
+    @children_vectors = (self.class)::CrossoverExecutor.new(
       parent_vectors: @vectors,
       mutated_vectors: @mutated_vectors,
       use_mutated_component_rate: crossover_use_mutated_component_rate
@@ -78,7 +79,7 @@ class DE
   end
 
   def exec_selection
-    selection_executor = DE::SelectionExecutor.new \
+    selection_executor = (self.class)::SelectionExecutor.new \
       parents: @vectors,
       children: @children_vectors,
       f: f,
@@ -86,6 +87,12 @@ class DE
     @vectors = selection_executor.create_selected_vectors
     @evaluation_count += selection_executor.evaluation_count
     @min_vector = @vectors.min { |a, b| a.calculated_value <=> b.calculated_value }
+
+    selection_executor # use this returned value and extract properties in subclass if needed
+  end
+
+  def exec_termination_of_ending_generation
+    # override this if there is need to do something at ending of each generation
   end
 
   def log_result

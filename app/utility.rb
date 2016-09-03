@@ -4,3 +4,4 @@ require 'benchmark'
 
 require_relative './extensions/vector.rb'
 require_relative './utilities/random.rb'
+require_relative './utilities/math_calculator.rb'

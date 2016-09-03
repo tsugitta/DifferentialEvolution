@@ -14,7 +14,6 @@ class JADE < DE
     c_to_use_new_rate_mean_weight: 0.1
   }
 
-  attr_reader :magnification_rate_mean, :use_mutated_component_rate_mean
   attr_reader *JADE_DEFAULT_OPTION.keys
 
   def initialize(f, option = {})
@@ -32,19 +31,19 @@ class JADE < DE
 
   private
 
-  def exec_initial_setup
+  def exec_initialization_of_beginning_generation
     vectors.each do |vector|
       vector.magnification_rate = Random.rand_following_normal_from_0_to_1 \
-        magnification_rate_mean,
+        @magnification_rate_mean,
         normal_distribution_sigma
       vector.use_mutated_component_rate = Random.rand_following_cauchy_from_0_to_1 \
-        use_mutated_component_rate_mean,
+        @use_mutated_component_rate_mean,
         cauchy_distribution_gamma
     end
   end
 
   def exec_mutation
-    mutated_vector_creator = JADE::MutatedVectorCreator.new \
+    mutated_vector_creator = (self.class)::MutatedVectorCreator.new \
       @vectors,
       p: p_to_use_current_to_pbest_mutation,
       f: f,
@@ -53,27 +52,11 @@ class JADE < DE
     @evaluation_count += mutated_vector_creator.evaluation_count
   end
 
-  def exec_crossover
-    @children_vectors = JADE::CrossoverExecutor.new(
-      parent_vectors: @vectors,
-      mutated_vectors: @mutated_vectors
-    ).create_children
-  end
-
   def exec_selection
-    selection_executor = JADE::SelectionExecutor.new \
-      parents: @vectors,
-      children: @children_vectors,
-      f: f,
-      evaluation_rest: max_evaluation - @evaluation_count
-    @vectors = selection_executor.create_selected_vectors
-    @evaluation_count += selection_executor.evaluation_count
-    @min_vector = @vectors.min { |a, b| a.calculated_value <=> b.calculated_value }
+    selection_executor = super
     @success_magnification_rates += selection_executor.success_magnification_rates
     @success_use_mutated_component_rates += selection_executor.success_use_mutated_component_rates
     update_archives_with(selection_executor.archived_vectors)
-
-    get_means
   end
 
   def update_archives_with(new_archives)
@@ -86,25 +69,9 @@ class JADE < DE
     end
   end
 
-  def get_means
+  def exec_termination_of_ending_generation
     c = c_to_use_new_rate_mean_weight
-    @magnification_rate_mean = (1 - c) * @magnification_rate_mean + c * lehmer_mean(@success_magnification_rates)
-    @use_mutated_component_rate_mean = (1 - c) * @use_mutated_component_rate_mean + c * arithmetic_mean(@success_use_mutated_component_rates)
-  end
-
-  def arithmetic_mean(values)
-    values.inject(:+) / values.size
-  end
-
-  def lehmer_mean(values)
-    sum = 0.0
-    square_sum = 0.0
-
-    values.each do |value|
-      sum += value
-      square_sum += value ** 2
-    end
-
-    square_sum / sum
+    @magnification_rate_mean = (1 - c) * @magnification_rate_mean + c * MathCalculator.lehmer_mean(@success_magnification_rates)
+    @use_mutated_component_rate_mean = (1 - c) * @use_mutated_component_rate_mean + c * MathCalculator.arithmetic_mean(@success_use_mutated_component_rates)
   end
 end

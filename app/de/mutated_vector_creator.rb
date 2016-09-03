@@ -28,6 +28,7 @@ class DE::MutatedVectorCreator
 
   private
 
+  # rand/1 mutation
   def rand_1_mutated_vectors
     raise 'Mutation\'s magnification_rate must be specified.' if @magnification_rate == nil
     mutated_vectors = []
@@ -41,6 +42,7 @@ class DE::MutatedVectorCreator
     mutated_vectors
   end
 
+  # rand/2 mutation
   def rand_2_mutated_vectors
     raise 'Mutation\'s magnification_rate must be specified.' if magnification_rate == nil
     mutated_vectors = []
@@ -54,6 +56,7 @@ class DE::MutatedVectorCreator
     mutated_vectors
   end
 
+  # current-to-pbest/1 mutation
   def current_to_pbest_1_mutated_vectors
     raise 'p must be passed if using pbest.' if @p == nil
     raise 'f must be passed if using pbest.' if @f == nil

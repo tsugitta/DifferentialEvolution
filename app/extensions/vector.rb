@@ -7,9 +7,4 @@ class Vector
     @calculated_function ||= f
     @calculated_value ||= f.calc(self)
   end
-
-  def set_parameters(magnification_rate, use_mutated_component_rate)
-    @magnification_rate = magnification_rate
-    @use_mutated_component_rate = use_mutated_component_rate
-  end
 end
