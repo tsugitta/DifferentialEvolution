@@ -6,7 +6,7 @@ require_relative './de/selection_executor.rb'
 class DE
   DEFAULT_OPTION = {
     dimension: 2,
-    number_of_vectors: 105,
+    number_of_vectors: 100,
     max_generation: 1000,
     max_evaluation: 100000,
     initial_value_min: -100,
