@@ -1,15 +1,6 @@
 class DE end
 
 class DE::CrossoverExecutor
-  def self.create_children(parent_vectors: nil, mutated_vectors: nil, use_mutated_component_rate: nil, crossover_method: :binomial)
-    new(
-      parent_vectors: parent_vectors,
-      mutated_vectors: mutated_vectors,
-      use_mutated_component_rate: use_mutated_component_rate,
-      crossover_method: crossover_method
-    ).create_children
-  end
-
   def initialize(parent_vectors: nil, mutated_vectors: nil, use_mutated_component_rate: nil, crossover_method: :binomial)
     raise 'parent and mutated vectors must be passed' if parent_vectors == nil || mutated_vectors == nil
     @parent_vectors = parent_vectors

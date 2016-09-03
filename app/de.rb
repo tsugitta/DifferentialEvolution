@@ -54,11 +54,11 @@ class DE
   end
 
   def set_initial_vectors
-    @vectors = DE::InitialVectorCreator.create \
-      length: number_of_vectors,
+    @vectors = DE::InitialVectorCreator.new(
       dimension: dimension,
       min: initial_value_min,
       max: initial_value_max
+    ).create(number_of_vectors)
   end
 
   def exec_initial_setup
@@ -66,15 +66,15 @@ class DE
   end
 
   def exec_mutation
-    @mutated_vectors = DE::MutatedVectorCreator
-      .create_from(@vectors, magnification_rate: mutation_magnification_rate)
+    @mutated_vectors = DE::MutatedVectorCreator.new(@vectors, magnification_rate: mutation_magnification_rate).create
   end
 
   def exec_crossover
-    @children_vectors = DE::CrossoverExecutor.create_children \
+    @children_vectors = DE::CrossoverExecutor.new(
       parent_vectors: @vectors,
       mutated_vectors: @mutated_vectors,
       use_mutated_component_rate: crossover_use_mutated_component_rate
+    ).create_children
   end
 
   def exec_selection

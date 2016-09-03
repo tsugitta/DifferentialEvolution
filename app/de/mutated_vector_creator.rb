@@ -1,9 +1,7 @@
 class DE end
 
 class DE::MutatedVectorCreator
-  def self.create_from(vectors, magnification_rate: nil, mutation_method: :rand_1, p: nil, f: nil, archived_vectors: nil)
-    new(vectors, magnification_rate: magnification_rate, mutation_method: mutation_method, p: p, f: f, archived_vectors: archived_vectors).create
-  end
+  attr_reader :evaluation_count
 
   def initialize(vectors, magnification_rate: nil, mutation_method: :rand_1, p: nil, f: nil, archived_vectors: nil)
     @vectors = vectors
@@ -12,6 +10,7 @@ class DE::MutatedVectorCreator
     @p = p
     @f = f
     @archived_vectors = archived_vectors
+    @evaluation_count = 0
   end
 
   def create
@@ -86,12 +85,23 @@ class DE::MutatedVectorCreator
   end
 
   def vectors_sorted_desc_by_score
+    @vectors.each do |vector|
+
+    end
+
     @vectors.sort do |v_a, v_b|
-      v_a.calculate_with(@f) <=> v_b.calculate_with(@f) # the lower value, the higher score
+      evaluate(v_a) unless v_a.calculated_value
+      evaluate(v_b) unless v_b.calculated_value
+      v_a.calculated_value <=> v_b.calculated_value # the lower value, the higher score
     end
   end
 
   def vector_size
     @vector_size ||= @vectors.size
+  end
+
+  def evaluate(v)
+    v.calculate_with(@f)
+    @evaluation_count += 1
   end
 end

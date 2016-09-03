@@ -44,14 +44,20 @@ class JADE < DE
   end
 
   def exec_mutation
-    @mutated_vectors = JADE::MutatedVectorCreator
-      .create_from(@vectors, p: p_to_use_current_to_pbest_mutation, f: f, archived_vectors: @archived_vectors)
+    mutated_vector_creator = JADE::MutatedVectorCreator.new \
+      @vectors,
+      p: p_to_use_current_to_pbest_mutation,
+      f: f,
+      archived_vectors: @archived_vectors
+    @mutated_vectors = mutated_vector_creator.create
+    @evaluation_count += mutated_vector_creator.evaluation_count
   end
 
   def exec_crossover
-    @children_vectors = JADE::CrossoverExecutor.create_children \
+    @children_vectors = JADE::CrossoverExecutor.new(
       parent_vectors: @vectors,
       mutated_vectors: @mutated_vectors
+    ).create_children
   end
 
   def exec_selection
