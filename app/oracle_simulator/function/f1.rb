@@ -8,8 +8,12 @@ class OracleSimulator::Function::F1 < OracleSimulator::Function
     beta:  0.5
   }
 
+  def initialize(option = {})
+    @option = OPTION.merge(option)
+  end
+
   def calc(x)
     raise 'x must be in [0, 1]' unless x >= 0 && x <= 1
-    OPTION[:alpha] * x + OPTION[:beta]
+    @option[:alpha] * x + @option[:beta]
   end
 end

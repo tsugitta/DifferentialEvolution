@@ -6,13 +6,17 @@ class OracleSimulator::Function::F2 < OracleSimulator::Function
   include Math
 
   OPTION = {
-    alpha: -0.4,
-    omega: 10,
+    alpha: -0.2,
+    omega: 20,
     beta:  0.5
   }
 
+  def initialize(option = {})
+    @option = OPTION.merge(option)
+  end
+
   def calc(x)
     raise 'x must be in [0, 1]' unless x >= 0 && x <= 1
-    OPTION[:alpha] * sin(OPTION[:omega] * x) + OPTION[:beta]
+    @option[:alpha] * sin(@option[:omega] * x) + @option[:beta]
   end
 end

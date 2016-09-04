@@ -4,21 +4,27 @@ require_relative './oracle_simulator/success_checker.rb'
 require_relative './de.rb'
 require_relative './jade.rb'
 
-oracle_function = OracleSimulator::Function::F2.new
+oracle_f1 = OracleSimulator::Function::F1.new \
+  alpha: -0.1,
+  beta: 0.5
+oracle_f2 = OracleSimulator::Function::F2.new \
+  alpha: 0.3,
+  omega: 20,
+  beta: 0.3
+oracle_f3 = OracleSimulator::Function::F3.new \
+  initial_value: 0.5,
+  step: 0.005
+
 success_checker = OracleSimulator::SuccessChecker::F1.new
+
 de = JADE.new(
-  dimension: 2,
-  number_of_vectors: 50,
-  max_generation: 50000,
-  max_evaluation: 100000,
-  initial_value_min: -100,
-  initial_value_max: 100,
+  number_of_vectors: 1000,
+  max_generation: 30000,
   initial_magnification_rate_mean: 0.5,
   initial_use_mutated_component_rate_mean: 0.5,
   normal_distribution_sigma: 0.1,
   cauchy_distribution_gamma: 0.1,
   p_to_use_current_to_pbest_mutation: 0.1,
-  archived_vectors_size: 50,
   c_to_use_new_rate_mean_weight: 0.05
 )
-de.oracle_simulate(oracle_function, success_checker)
+de.oracle_simulate(oracle_f1, success_checker)

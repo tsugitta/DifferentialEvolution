@@ -5,15 +5,16 @@ class OracleSimulator::Function end
 class OracleSimulator::Function::F3 < OracleSimulator::Function
   OPTION = {
     initial_value: 0.5,
-    step: 0.001
+    step: 0.01
   }
 
-  def initialize
-    @last_calculated_value = OPTION[:initial_value]
+  def initialize(option = {})
+    @option = OPTION.merge(option)
+    @last_calculated_value = @option[:initial_value]
   end
 
   def calc(x)
-    calculated_value = @last_calculated_value + OPTION[:step] * [1, -1].sample
+    calculated_value = @last_calculated_value + @option[:step] * [1, -1].sample
 
     if calculated_value > 0.9
       calculated_value = 2 * 0.9 - calculated_value
