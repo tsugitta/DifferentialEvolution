@@ -7,7 +7,7 @@ class OracleSimulator::SuccessChecker::F1 < OracleSimulator::SuccessChecker
 
   OPTION = {
     alpha: 1,
-    beta:  0.3
+    beta:  0.1
   }
 
   def succeeded?(oracle_parameter, parameter)

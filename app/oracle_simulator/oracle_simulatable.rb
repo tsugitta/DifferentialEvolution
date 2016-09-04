@@ -7,22 +7,23 @@ module OracleSimulatable
     @success_checker = success_checker
 
     @oracle_simulation_max_count = max_generation
-    oracle_simulation_count = 0
 
     @oracle_parameters = []
     @parameters = []
 
-    while oracle_simulation_count < @oracle_simulation_max_count
+    (1..@oracle_simulation_max_count).each do |oracle_simulation_count|
       @success_parameters = []
       oracle_parameter = create_oracle_parameter(oracle_simulation_count.to_f / @oracle_simulation_max_count.to_f)
-      parameter = create_parameter
-      check_parameter_success(oracle_parameter, parameter)
 
       @oracle_parameters << oracle_parameter
       @parameters << @parameter_means.dup
 
+      (1..number_of_vectors).each do |vector_number|
+        parameter = create_parameter
+        check_parameter_success(oracle_parameter, parameter)
+      end
+
       update_parameters
-      oracle_simulation_count += 1
     end
 
     plot_parameters
