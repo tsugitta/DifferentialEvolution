@@ -2,8 +2,11 @@ require_relative './de.rb'
 require_relative './jade/mutated_vector_creator.rb'
 require_relative './jade/crossover_executor.rb'
 require_relative './jade/selection_executor.rb'
+require_relative './concerns/oracle_simulatable.rb'
 
 class JADE < DE
+  include OracleSimulatable
+
   JADE_DEFAULT_OPTION = {
     initial_magnification_rate_mean: 0.5,
     initial_use_mutated_component_rate_mean: 0.5,
@@ -14,18 +17,19 @@ class JADE < DE
     c_to_use_new_rate_mean_weight: 0.1
   }
 
-  attr_reader *JADE_DEFAULT_OPTION.keys
+  attr_reader(*JADE_DEFAULT_OPTION.keys)
 
-  def initialize(f, option = {})
+  def initialize(f = nil, option = {})
     option = JADE_DEFAULT_OPTION.merge(option)
     option[:archived_vectors_size] = DEFAULT_OPTION[:number_of_vectors]
 
     super(f, option)
 
-    @magnification_rate_mean = initial_magnification_rate_mean
-    @use_mutated_component_rate_mean = initial_use_mutated_component_rate_mean
-    @success_magnification_rates = []
-    @success_use_mutated_component_rates = []
+    @parameter_means = Parameter.new(
+      initial_magnification_rate_mean,
+      initial_use_mutated_component_rate_mean
+    )
+    @success_parameters = []
     @archived_vectors = []
   end
 
@@ -33,12 +37,7 @@ class JADE < DE
 
   def exec_initialization_of_beginning_generation
     vectors.each do |vector|
-      vector.magnification_rate = Random.rand_following_normal_from_0_to_1 \
-        @magnification_rate_mean,
-        normal_distribution_sigma
-      vector.use_mutated_component_rate = Random.rand_following_cauchy_from_0_to_1 \
-        @use_mutated_component_rate_mean,
-        cauchy_distribution_gamma
+      vector.parameter = create_parameter
     end
   end
 
@@ -54,8 +53,7 @@ class JADE < DE
 
   def exec_selection
     selection_executor = super
-    @success_magnification_rates += selection_executor.success_magnification_rates
-    @success_use_mutated_component_rates += selection_executor.success_use_mutated_component_rates
+    @success_parameters += selection_executor.success_parameters
     update_archives_with(selection_executor.archived_vectors)
   end
 
@@ -70,8 +68,26 @@ class JADE < DE
   end
 
   def exec_termination_of_ending_generation
+    update_parameters
+  end
+
+  def create_parameter
+    Parameter.new(
+      Random.rand_following_normal_from_0_to_1(
+        @parameter_means.magnification_rate,
+        normal_distribution_sigma
+      ),
+      Random.rand_following_cauchy_from_0_to_1(
+        @parameter_means.use_mutated_component_rate,
+        cauchy_distribution_gamma
+      )
+    )
+  end
+
+  def update_parameters
     c = c_to_use_new_rate_mean_weight
-    @magnification_rate_mean = (1 - c) * @magnification_rate_mean + c * MathCalculator.lehmer_mean(@success_magnification_rates)
-    @use_mutated_component_rate_mean = (1 - c) * @use_mutated_component_rate_mean + c * MathCalculator.arithmetic_mean(@success_use_mutated_component_rates)
+    return if @success_parameters.empty?
+    @parameter_means.magnification_rate = (1 - c) * @parameter_means.magnification_rate + c * MathCalculator.lehmer_mean(@success_parameters.map(&:magnification_rate))
+    @parameter_means.use_mutated_component_rate = (1 - c) * @parameter_means.use_mutated_component_rate + c * MathCalculator.arithmetic_mean(@success_parameters.map(&:use_mutated_component_rate))
   end
 end

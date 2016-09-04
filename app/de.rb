@@ -16,16 +16,13 @@ class DE
   }
 
   attr_reader :f, :vectors, :min_vector, :time, :generation, :evaluation_count
-  attr_reader *DEFAULT_OPTION.keys
+  attr_reader(*DEFAULT_OPTION.keys)
 
-  def initialize(f, option = {})
-    unless f.is_a?(BenchmarkFunction)
-      raise 'DE initialize must be passed the benchmark func as the first argument.'
-    end
-
+  def initialize(f = nil, option = {})
     @generation, @evaluation_count = 1, 0
     @f = f
-    set_option(DEFAULT_OPTION.merge(f.option).merge(option))
+    f_option = @f != nil ? @f.option : {}
+    set_option(DEFAULT_OPTION.merge(f_option).merge(option))
   end
 
   def exec

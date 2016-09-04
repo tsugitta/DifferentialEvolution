@@ -4,12 +4,11 @@ require_relative '../de/selection_executor.rb'
 class JADE < DE; end
 
 class JADE::SelectionExecutor < DE::SelectionExecutor
-  attr_reader :archived_vectors, :success_magnification_rates, :success_use_mutated_component_rates
+  attr_reader :archived_vectors, :success_parameters
 
   def create_selected_vectors
     @archived_vectors = []
-    @success_magnification_rates = []
-    @success_use_mutated_component_rates = []
+    @success_parameters = []
     super
   end
 
@@ -20,8 +19,7 @@ class JADE::SelectionExecutor < DE::SelectionExecutor
       p_v
     else
       @archived_vectors << p_v
-      @success_magnification_rates << p_v.magnification_rate
-      @success_use_mutated_component_rates << p_v.use_mutated_component_rate
+      @success_parameters << p_v.parameter
       c_v
     end
   end
