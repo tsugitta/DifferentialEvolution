@@ -6,4 +6,8 @@ class Parameter
     @magnification_rate = magnification_rate
     @use_mutated_component_rate = use_mutated_component_rate
   end
+
+  def dup
+    Parameter.new(magnification_rate, use_mutated_component_rate)
+  end
 end

@@ -12,7 +12,7 @@ class JADE < DE
     initial_use_mutated_component_rate_mean: 0.5,
     normal_distribution_sigma: 0.1,
     cauchy_distribution_gamma: 0.1,
-    p_to_use_current_to_pbest_mutation: 0.05,
+    p_to_use_current_to_pbest_mutation: 0.1,
     archived_vectors_size: 50,
     c_to_use_new_rate_mean_weight: 0.1
   }
@@ -86,8 +86,9 @@ class JADE < DE
   end
 
   def update_parameters
-    c = c_to_use_new_rate_mean_weight
     return if @success_parameters.empty?
+
+    c = c_to_use_new_rate_mean_weight
     @parameter_means.magnification_rate = (1 - c) * @parameter_means.magnification_rate + c * MathCalculator.lehmer_mean(@success_parameters.map(&:magnification_rate))
     @parameter_means.use_mutated_component_rate = (1 - c) * @parameter_means.use_mutated_component_rate + c * MathCalculator.arithmetic_mean(@success_parameters.map(&:use_mutated_component_rate))
   end

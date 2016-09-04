@@ -19,7 +19,7 @@ module OracleSimulatable
       check_parameter_success(oracle_parameter, parameter)
 
       @oracle_parameters << oracle_parameter
-      @parameters << parameter
+      @parameters << @parameter_means.dup
 
       update_parameters
       oracle_simulation_count += 1
@@ -39,15 +39,16 @@ module OracleSimulatable
 
         x_plots = (1..@oracle_simulation_max_count).to_a
 
+        parameter_plots = @parameters.map { |p| p.magnification_rate }
+        plot.data << Gnuplot::DataSet.new([x_plots, parameter_plots]) do |ds|
+          ds.with = 'lines'
+          ds.title = 'parameter'
+        end
+
         oracle_plots = @oracle_parameters.map { |p| p.magnification_rate }
         plot.data << Gnuplot::DataSet.new([x_plots, oracle_plots]) do |ds|
           ds.with = 'lines'
           ds.title = 'oracle parameter'
-        end
-
-        parameter_plots = @parameters.map { |p| p.magnification_rate }
-        plot.data << Gnuplot::DataSet.new([x_plots, parameter_plots]) do |ds|
-          ds.title = 'parameter'
         end
       end
     end

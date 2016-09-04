@@ -6,8 +6,8 @@ class OracleSimulator::SuccessChecker::F1 < OracleSimulator::SuccessChecker
   include Math
 
   OPTION = {
-    alpha: 0.4,
-    beta:  0.5
+    alpha: 1,
+    beta:  0.3
   }
 
   def succeeded?(oracle_parameter, parameter)
@@ -27,6 +27,9 @@ class OracleSimulator::SuccessChecker::F1 < OracleSimulator::SuccessChecker
   end
 
   def success_rate(p_a, p_b)
-    [-1 * OPTION[:alpha] * distance(p_a, p_b) + OPTION[:beta], 0].max
+    [
+      -1 * OPTION[:alpha] * distance(p_a, p_b) + OPTION[:beta],
+      0
+    ].max
   end
 end

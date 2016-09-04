@@ -12,7 +12,7 @@ class Random
       rand_n = rand_following_normal(mu, sigma)
 
       rand_n = 1 if rand_n > 1
-      rand_n = 0 if rand < 0
+      rand_n = 0 if rand_n < 0
 
       rand_n
     end
