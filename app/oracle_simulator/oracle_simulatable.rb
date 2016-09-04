@@ -39,33 +39,43 @@ module OracleSimulatable
 
         x_plots = (1..@oracle_simulation_max_count).to_a
 
-        parameter_plots = @parameters.map { |p| p.magnification_rate }
-        plot.data << Gnuplot::DataSet.new([x_plots, parameter_plots]) do |ds|
+        parameter_magnification_rate_plots = @parameters.map { |p| p.magnification_rate }
+        plot.data << Gnuplot::DataSet.new([x_plots, parameter_magnification_rate_plots]) do |ds|
           ds.with = 'lines'
-          ds.title = 'parameter'
+          ds.title = 'magnification-rate mean'
         end
 
-        oracle_plots = @oracle_parameters.map { |p| p.magnification_rate }
-        plot.data << Gnuplot::DataSet.new([x_plots, oracle_plots]) do |ds|
+        parameter_use_mutated_component_rate_plots = @parameters.map { |p| p.use_mutated_component_rate }
+        plot.data << Gnuplot::DataSet.new([x_plots, parameter_use_mutated_component_rate_plots]) do |ds|
           ds.with = 'lines'
-          ds.title = 'oracle parameter'
+          ds.title = 'use-mutated-component-rate mean'
+        end
+
+        oracle_magnification_rate_plots = @oracle_parameters.map { |p| p.magnification_rate }
+        plot.data << Gnuplot::DataSet.new([x_plots, oracle_magnification_rate_plots]) do |ds|
+          ds.with = 'lines'
+          ds.title = 'oracle magnification-rate'
+        end
+
+        oracle_use_mutated_component_rate_plots = @oracle_parameters.map { |p| p.magnification_rate }
+        plot.data << Gnuplot::DataSet.new([x_plots, oracle_use_mutated_component_rate_plots]) do |ds|
+          ds.with = 'lines'
+          ds.title = 'oracle use-mutated-component-rate'
         end
       end
     end
   end
 
   def create_oracle_parameter(x)
-    y = Parameter.new(
+    Parameter.new(
       @oracle_function.calc(x),
       @oracle_function.calc(x)
     )
-    y
   end
 
   def check_parameter_success(oracle_parameter, parameter)
     if @success_checker.succeeded?(oracle_parameter, parameter)
       @success_parameters << parameter
-    else
     end
   end
 end

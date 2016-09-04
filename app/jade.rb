@@ -2,7 +2,7 @@ require_relative './de.rb'
 require_relative './jade/mutated_vector_creator.rb'
 require_relative './jade/crossover_executor.rb'
 require_relative './jade/selection_executor.rb'
-require_relative './concerns/oracle_simulatable.rb'
+require_relative './oracle_simulator/oracle_simulatable.rb'
 
 class JADE < DE
   include OracleSimulatable
