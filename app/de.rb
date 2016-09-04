@@ -18,9 +18,9 @@ class DE
   attr_reader :f, :vectors, :min_vector, :time, :generation, :evaluation_count
   attr_reader(*DEFAULT_OPTION.keys)
 
-  def initialize(f = nil, option = {})
+  def initialize(option = {})
     @generation, @evaluation_count = 1, 0
-    @f = f
+    @f = option[:f]
     f_option = @f != nil ? @f.option : {}
     set_option(DEFAULT_OPTION.merge(f_option).merge(option))
   end

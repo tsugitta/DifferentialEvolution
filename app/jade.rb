@@ -19,11 +19,11 @@ class JADE < DE
 
   attr_reader(*JADE_DEFAULT_OPTION.keys)
 
-  def initialize(f = nil, option = {})
+  def initialize(option = {})
     option = JADE_DEFAULT_OPTION.merge(option)
     option[:archived_vectors_size] = DEFAULT_OPTION[:number_of_vectors]
 
-    super(f, option)
+    super(option)
 
     @parameter_means = Parameter.new(
       initial_magnification_rate_mean,
