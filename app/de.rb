@@ -8,7 +8,7 @@ class DE
     dimension: 2,
     number_of_vectors: 50,
     max_generation: 30000,
-    max_evaluation: 100000,
+    max_evaluation: 300000,
     initial_value_min: -100,
     initial_value_max: 100,
     mutation_magnification_rate: 0.5,

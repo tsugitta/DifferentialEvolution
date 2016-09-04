@@ -81,17 +81,17 @@ class DE::MutatedVectorCreator
   end
 
   def select_vectors_except(parent_v, count)
-    selected_vectors_with_rest = @vectors.sample(count + 1)
-    selected_vectors_with_rest
-      .reject { |v| v == parent_v }
-      .sample(count)
+    begin
+      selected_vectors_with_rest = @vectors.sample(count + 1)
+      selected_vector = selected_vectors_with_rest
+        .reject { |v| v == parent_v }
+        .sample(count)
+    end while selected_vector == nil
+
+    selected_vector
   end
 
   def vectors_sorted_desc_by_score
-    @vectors.each do |vector|
-
-    end
-
     @vectors.sort do |v_a, v_b|
       evaluate(v_a) unless v_a.calculated_value
       evaluate(v_b) unless v_b.calculated_value

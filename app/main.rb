@@ -4,5 +4,5 @@ require_relative './de.rb'
 require_relative './jade.rb'
 
 f = BenchmarkFunction::F1.new
-de = JADE.new(f)
+de = JADE.new(f: f)
 de.exec
