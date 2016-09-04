@@ -18,13 +18,13 @@ oracle_f3 = OracleSimulator::Function::F3.new \
 success_checker = OracleSimulator::SuccessChecker::F1.new
 
 de = JADE.new(
-  number_of_vectors: 1000,
+  number_of_vectors: 50,
   max_generation: 30000,
   initial_magnification_rate_mean: 0.5,
   initial_use_mutated_component_rate_mean: 0.5,
   normal_distribution_sigma: 0.1,
   cauchy_distribution_gamma: 0.1,
   p_to_use_current_to_pbest_mutation: 0.1,
-  c_to_use_new_rate_mean_weight: 0.05
+  c_to_use_new_rate_mean_weight: 0.01
 )
 de.oracle_simulate(oracle_f1, success_checker)

@@ -15,7 +15,7 @@ class DE
     crossover_use_mutated_component_rate: 0.5
   }
 
-  attr_reader :f, :vectors, :min_vector, :time, :generation, :evaluation_count
+  attr_reader :f, :vectors, :min_vectors, :time, :generation, :evaluation_count
   attr_reader(*DEFAULT_OPTION.keys)
 
   def initialize(option = {})
@@ -28,6 +28,7 @@ class DE
   def exec
     @time = Benchmark.realtime do
       set_initial_vectors
+      @min_vectors = []
 
       loop do
         break if generation >= max_generation || evaluation_count >= max_evaluation
@@ -41,6 +42,7 @@ class DE
     end
 
     log_result
+    plot_min_value
   end
 
   private
@@ -83,7 +85,7 @@ class DE
       evaluation_rest: max_evaluation - @evaluation_count
     @vectors = selection_executor.create_selected_vectors
     @evaluation_count += selection_executor.evaluation_count
-    @min_vector = @vectors.min { |a, b| a.calculated_value <=> b.calculated_value }
+    @min_vectors << @vectors.min { |a, b| a.calculated_value <=> b.calculated_value }
 
     selection_executor # use this returned value and extract properties in subclass if needed
   end
@@ -102,9 +104,28 @@ class DE
       mutation_magnification_rate: #{mutation_magnification_rate}
       crossover_use_mutated_component_rate: #{crossover_use_mutated_component_rate}
 
-      min: #{min_vector.calculated_value}
-      vector: #{min_vector}
+      min: #{@min_vectors.last.calculated_value}
+      vector: #{@min_vectors.last}
       time: #{time}s
     EOS
+  end
+
+  def plot_min_value
+    Gnuplot.open do |gp|
+      Gnuplot::Plot.new(gp) do |plot|
+        plot.title 'Min value transition'
+        plot.xlabel 'generation'
+        plot.ylabel 'value'
+        plot.set 'logscale y'
+
+        x_plots = (1..@generation).to_a
+
+        min_value_plots = @min_vectors.map { |v| v.calculated_value }
+        plot.data << Gnuplot::DataSet.new([x_plots, min_value_plots]) do |ds|
+          ds.with = 'lines'
+          ds.title = 'min value'
+        end
+      end
+    end
   end
 end
