@@ -4,7 +4,7 @@ class OracleSimulator::Function end
 # Line: y = alpha * x + beta
 class OracleSimulator::Function::F1 < OracleSimulator::Function
   OPTION = {
-    alpha: 0.4,
+    alpha: -0.4,
     beta:  0.5
   }
 

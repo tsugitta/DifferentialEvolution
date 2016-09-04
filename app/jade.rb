@@ -29,13 +29,14 @@ class JADE < DE
       initial_magnification_rate_mean,
       initial_use_mutated_component_rate_mean
     )
-    @success_parameters = []
     @archived_vectors = []
   end
 
   private
 
   def exec_initialization_of_beginning_generation
+    @success_parameters = []
+
     vectors.each do |vector|
       vector.parameter = create_parameter
     end

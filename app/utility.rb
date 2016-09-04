@@ -1,6 +1,7 @@
 require 'pry'
 require 'matrix'
 require 'benchmark'
+require 'gnuplot'
 
 require_relative './entities/parameter.rb'
 

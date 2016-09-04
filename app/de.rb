@@ -7,7 +7,7 @@ class DE
   DEFAULT_OPTION = {
     dimension: 2,
     number_of_vectors: 50,
-    max_generation: 1000,
+    max_generation: 30000,
     max_evaluation: 100000,
     initial_value_min: -100,
     initial_value_max: 100,
