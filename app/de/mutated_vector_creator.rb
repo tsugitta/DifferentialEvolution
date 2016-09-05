@@ -33,15 +33,12 @@ class DE::MutatedVectorCreator
     mutated_vectors = []
 
     @vectors.each do |parent_v|
-      mutated_vectors << rand_1_mutated_vector(parent_v)
+      set_magnification_rate(parent_v)
+      v_a, v_b, v_c = select_vectors_except(parent_v, 3)
+      mutated_vectors << v_a + (v_b - v_c) * @magnification_rate
     end
 
     mutated_vectors
-  end
-
-  def rand_1_mutated_vector(parent_v)
-    v_a, v_b, v_c = select_vectors_except(parent_v, 3)
-    v_a + (v_b - v_c) * @magnification_rate
   end
 
   # rand/2 mutation
@@ -50,6 +47,7 @@ class DE::MutatedVectorCreator
     mutated_vectors = []
 
     @vectors.each do |parent_v|
+      set_magnification_rate(parent_v)
       v_a, v_b, v_c, v_d, v_e = select_vectors_except(parent_v, 5)
       mutated_vector = v_a + (v_b - v_c) * @magnification_rate + (v_d - v_e) * @magnification_rate
       mutated_vectors << mutated_vector
@@ -69,17 +67,14 @@ class DE::MutatedVectorCreator
     v_b_candidates = @vectors + @archived_vectors
 
     @vectors.each do |parent_v|
-      mutated_vectors << current_to_pbest_1_mutated_vector(parent_v, p_candidates, v_b_candidates)
+      set_magnification_rate(parent_v)
+      v_p = p_candidates.sample
+      v_a = select_vectors_except(parent_v, 1).first
+      v_b = v_b_candidates.sample
+      mutated_vectors << parent_v + (v_p - parent_v) * @magnification_rate + (v_a - v_b) * @magnification_rate
     end
 
     mutated_vectors
-  end
-
-  def current_to_pbest_1_mutated_vector(parent_v, p_candidates, v_b_candidates)
-    v_p = p_candidates.sample
-    v_a = select_vectors_except(parent_v, 1).first
-    v_b = v_b_candidates.sample
-    parent_v + (v_p - parent_v) * @magnification_rate + (v_a - v_b) * @magnification_rate
   end
 
   def select_vectors_except(parent_v, count)
@@ -99,6 +94,10 @@ class DE::MutatedVectorCreator
       evaluate(v_b) unless v_b.calculated_value
       v_a.calculated_value <=> v_b.calculated_value # the lower value, the higher score
     end
+  end
+
+  def set_magnification_rate(parent_v)
+    # override this and set @magnification_rate if needed
   end
 
   def vector_size

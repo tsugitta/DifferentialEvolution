@@ -31,6 +31,7 @@ class DE::CrossoverExecutor
   private
 
   def binomial_crossovered_vector(p_v, m_v)
+    set_use_mutated_component_rate(p_v)
     child_components = []
     must_use_mutated_index = rand(dim) - 1
 
@@ -46,6 +47,7 @@ class DE::CrossoverExecutor
   end
 
   def exponential_crossovered_vector(p_v, m_v)
+    set_use_mutated_component_rate(p_v)
     child_components = p_v.to_a
     k, j = 1, rand(dim)
 
@@ -56,6 +58,10 @@ class DE::CrossoverExecutor
     end while use_mutated_component? && k < dim
 
     Vector.elements(child_components, false)
+  end
+
+  def set_use_mutated_component_rate(p_v)
+    # override this and set @use_mutated_component_rate if needed
   end
 
   def vector_count

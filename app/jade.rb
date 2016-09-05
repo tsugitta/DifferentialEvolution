@@ -1,7 +1,4 @@
 require_relative './de.rb'
-require_relative './jade/mutated_vector_creator.rb'
-require_relative './jade/crossover_executor.rb'
-require_relative './jade/selection_executor.rb'
 require_relative './oracle_simulator/oracle_simulatable.rb'
 require_relative './concerns/parameter_transition_plottable.rb'
 
@@ -21,7 +18,6 @@ class JADE < DE
 
   def initialize(option = {})
     option = JADE_DEFAULT_OPTION.merge(option)
-    option[:archived_vectors_size] = DEFAULT_OPTION[:number_of_vectors]
 
     super(option)
 
@@ -32,6 +28,13 @@ class JADE < DE
   end
 
   private
+
+  def set_de_executors
+    @initial_vector_creator_klass = DE::InitialVectorCreator
+    @mutated_vector_creator_klass = DE::ParameterChangeableMutatedVectorCreator
+    @crossover_executor_klass = DE::ParameterChangeableCrossoverExecutor
+    @selection_executor_klass = DE::ParameterSaveableSelectionExecutor
+  end
 
   def exec_initialization_of_beginning_generation
     @parameter_mean_history << @parameter_means

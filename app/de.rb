@@ -1,7 +1,10 @@
 require_relative './de/initial_vector_creator.rb'
 require_relative './de/mutated_vector_creator.rb'
+require_relative './de/parameter_changeable_mutated_vector_creator.rb'
 require_relative './de/crossover_executor.rb'
+require_relative './de/parameter_changeable_crossover_executor.rb'
 require_relative './de/selection_executor.rb'
+require_relative './de/parameter_saveable_selection_executor.rb'
 
 class DE
   DEFAULT_OPTION = {
@@ -29,6 +32,7 @@ class DE
     set_option(DEFAULT_OPTION.merge(f_option).merge(option))
 
     @archived_vectors = [] if use_archive?
+    set_de_executors
   end
 
   def exec
@@ -59,8 +63,15 @@ class DE
     end
   end
 
+  def set_de_executors
+    @initial_vector_creator_klass = DE::InitialVectorCreator
+    @mutated_vector_creator_klass = DE::MutatedVectorCreator
+    @crossover_executor_klass = DE::CrossoverExecutor
+    @selection_executor_klass = DE::SelectionExecutor
+  end
+
   def set_initial_vectors
-    @vectors = (self.class)::InitialVectorCreator.new(
+    @vectors = @initial_vector_creator_klass.new(
       dimension: dimension,
       min: initial_value_min,
       max: initial_value_max
@@ -79,7 +90,7 @@ class DE
   def exec_mutation
     mutated_vector_creator = case mutation_method
     when 'current-to-pbest/1'
-      (self.class)::MutatedVectorCreator.new \
+      @mutated_vector_creator_klass.new \
         @vectors,
         mutation_method: mutation_method,
         magnification_rate: mutation_magnification_rate,
@@ -87,7 +98,7 @@ class DE
         f: f,
         archived_vectors: @archived_vectors
     when 'rand/1', 'rand/2'
-      (self.class)::MutatedVectorCreator.new \
+      @mutated_vector_creator_klass.new \
         @vectors,
         mutation_method: mutation_method,
         magnification_rate: mutation_magnification_rate
@@ -100,7 +111,7 @@ class DE
   end
 
   def exec_crossover
-    @children_vectors = (self.class)::CrossoverExecutor.new(
+    @children_vectors = @crossover_executor_klass.new(
       parent_vectors: @vectors,
       mutated_vectors: @mutated_vectors,
       use_mutated_component_rate: crossover_use_mutated_component_rate,
@@ -109,7 +120,7 @@ class DE
   end
 
   def exec_selection
-    selection_executor = (self.class)::SelectionExecutor.new \
+    selection_executor = @selection_executor_klass.new \
       parents: @vectors,
       children: @children_vectors,
       f: f,

@@ -35,11 +35,21 @@ class DE::SelectionExecutor
 
   def better_vector(p_v, c_v)
     if p_v.calculated_value <= c_v.calculated_value
+      exec_when_parent_vector_is_better(p_v, c_v)
       p_v
     else
+      exec_when_child_vector_is_better(p_v, c_v)
       @archived_vectors << p_v
       c_v
     end
+  end
+
+  def exec_when_parent_vector_is_better(p_v, c_v)
+    # override this if needed
+  end
+
+  def exec_when_child_vector_is_better(p_v, c_v)
+    # override this if needed
   end
 
   def vector_count
