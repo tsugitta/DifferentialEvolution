@@ -14,6 +14,10 @@ class OracleSimulator::SuccessChecker::F1 < OracleSimulator::SuccessChecker
     rand < success_rate(oracle_parameter, parameter)
   end
 
+  def label
+    "Line(alpha: #{OPTION[:alpha]}, beta: #{OPTION[:beta]})"
+  end
+
   private
 
   def distance(p_a, p_b)

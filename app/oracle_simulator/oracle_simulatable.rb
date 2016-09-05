@@ -31,10 +31,19 @@ module OracleSimulatable
 
   private
 
+  def oracle_parameter_information
+    information = [
+      "#{self.class}, oracle f: #{@oracle_function.label}, checker f: #{@success_checker.label}, N: #{number_of_vectors}, generation: #{@oracle_simulation_max_count}",
+      '\n' + "initial R: #{initial_magnification_rate_mean}, initial C: #{initial_use_mutated_component_rate_mean}",
+    ]
+    information << ('\n' + "p for pbest: #{p_to_use_current_to_pbest_mutation}, archive size: #{archived_vectors_size}") if use_archive?
+    information.join
+  end
+
   def plot_parameters
     Gnuplot.open do |gp|
       Gnuplot::Plot.new(gp) do |plot|
-        plot.title 'Oracle simulation'
+        plot.title oracle_parameter_information
         plot.xlabel 'generation'
         plot.ylabel 'parameter'
 

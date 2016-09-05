@@ -136,28 +136,31 @@ class DE
     end
   end
 
+  def parameter_information
+    information = [
+      "#{self.class}, f: #{@f.label}, D: #{dimension}, N: #{number_of_vectors}, generation: #{@generation}",
+      '\n' + "evaluation: #{@evaluation_count}, mutation: #{mutation_method}, R: #{mutation_magnification_rate}",
+      '\n' + "crossover : #{@crossover_method}, C: #{crossover_use_mutated_component_rate}, R: #{mutation_magnification_rate}"
+    ]
+    information << ('\n' + "p for pbest: #{p_to_use_current_to_pbest_mutation}, archive size: #{archived_vectors_size}") if use_archive?
+    information.join
+  end
+
   def log_result
     puts <<~EOS
-      dimension: #{dimension}
-      number_of_vectors: #{number_of_vectors}
-      generation: #{generation}
-      evaluation: #{evaluation_count}
-      function: #{f.class}
-      mutation_magnification_rate: #{mutation_magnification_rate}
-      crossover_use_mutated_component_rate: #{crossover_use_mutated_component_rate}
-
-      min: #{@min_vectors.last.calculated_value}
-      vector: #{@min_vectors.last}
-      time: #{time}s
+    #{parameter_information.gsub(/(, )|\\n/, "\n")}
+    min: #{@min_vectors.last.calculated_value}
+    vector: #{@min_vectors.last}
+    time: #{time}s
     EOS
   end
 
   def plot_min_value
     Gnuplot.open do |gp|
       Gnuplot::Plot.new(gp) do |plot|
-        plot.title 'Min value transition'
+        plot.title parameter_information
         plot.xlabel 'generation'
-        plot.ylabel 'value'
+        plot.ylabel 'min value of vectors'
         plot.set 'logscale y'
 
         x_plots = (1..@generation).to_a

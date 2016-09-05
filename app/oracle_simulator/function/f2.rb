@@ -19,4 +19,8 @@ class OracleSimulator::Function::F2 < OracleSimulator::Function
     raise 'x must be in [0, 1]' unless x >= 0 && x <= 1
     @option[:alpha] * sin(@option[:omega] * x) + @option[:beta]
   end
+
+  def label
+    "Sin(alpha: #{@option[:alpha]}, omega: #{@option[:omega]}, beta: #{@option[:beta]})"
+  end
 end

@@ -25,4 +25,8 @@ class OracleSimulator::Function::F3 < OracleSimulator::Function
     @last_calculated_value = calculated_value
     calculated_value
   end
+
+  def label
+    "RandomWalk(initial value: #{@option[:initial_value]}, step: #{@option[:step]})"
+  end
 end

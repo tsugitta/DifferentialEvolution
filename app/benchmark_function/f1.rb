@@ -13,4 +13,8 @@ class BenchmarkFunction::F1 < BenchmarkFunction
     super(v)
     v.map{ |i| i ** 2 }.inject(:+)
   end
+
+  def label
+    'F1(Sphere)'
+  end
 end

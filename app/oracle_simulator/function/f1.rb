@@ -16,4 +16,8 @@ class OracleSimulator::Function::F1 < OracleSimulator::Function
     raise 'x must be in [0, 1]' unless x >= 0 && x <= 1
     @option[:alpha] * x + @option[:beta]
   end
+
+  def label
+    "Line(alpha: #{@option[:alpha]}, beta: #{@option[:beta]})"
+  end
 end
