@@ -37,6 +37,7 @@ class DE
       @min_vectors = []
 
       loop do
+        output_current_generation
         break if generation >= max_generation || evaluation_count >= max_evaluation
         exec_initialization_of_beginning_generation
         exec_mutation
@@ -65,6 +66,11 @@ class DE
       min: initial_value_min,
       max: initial_value_max
     ).create(number_of_vectors)
+  end
+
+  def output_current_generation
+    print "\rgeneration: #{@generation}"
+    print "\rdone.                   \n" if @generation >= max_generation
   end
 
   def exec_initialization_of_beginning_generation
