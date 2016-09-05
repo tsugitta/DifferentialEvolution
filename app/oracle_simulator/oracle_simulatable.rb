@@ -11,6 +11,9 @@ module OracleSimulatable
     @oracle_parameters = []
     @parameters = []
 
+    @check_count = 0
+    @check_success_count = 0
+
     (1..@oracle_simulation_max_count).each do |oracle_simulation_count|
       output_current_simulation_count(oracle_simulation_count)
       @success_parameters = []
@@ -40,7 +43,7 @@ module OracleSimulatable
   def oracle_parameter_information
     information = [
       "#{self.class}, oracle f: #{@oracle_function.label}, checker f: #{@success_checker.label}, N: #{number_of_vectors}, generation: #{@oracle_simulation_max_count}",
-      '\n' + "initial R: #{initial_magnification_rate_mean}, initial C: #{initial_use_mutated_component_rate_mean}",
+      '\n' + "initial R: #{initial_magnification_rate_mean}, initial C: #{initial_use_mutated_component_rate_mean}, r: #{sprintf('%.3f', @check_success_count.to_f / @check_count.to_f)}",
     ]
     information << ('\n' + "p for pbest: #{p_to_use_current_to_pbest_mutation}, archive size: #{archived_vectors_size}") if use_archive?
     information.join
@@ -90,7 +93,10 @@ module OracleSimulatable
   end
 
   def check_parameter_success(oracle_parameter, parameter)
+    @check_count += 1
+
     if @success_checker.succeeded?(oracle_parameter, parameter)
+      @check_success_count += 1
       @success_parameters << parameter
     end
   end
