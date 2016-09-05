@@ -15,11 +15,11 @@ class DE::MutatedVectorCreator
 
   def create
     case @mutation_method
-    when :rand_1
+    when 'rand/1'
       rand_1_mutated_vectors
-    when :rand_2
+    when 'rand/2'
       rand_2_mutated_vectors
-    when :current_to_pbest_1
+    when 'current-to-pbest/1'
       current_to_pbest_1_mutated_vectors
     else
       raise "mutation_method: '#{@mutation_method}' is invalid."

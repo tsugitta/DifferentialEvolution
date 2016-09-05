@@ -1,5 +1,5 @@
 class DE::CrossoverExecutor
-  def initialize(parent_vectors: nil, mutated_vectors: nil, use_mutated_component_rate: nil, crossover_method: :binomial)
+  def initialize(parent_vectors: nil, mutated_vectors: nil, use_mutated_component_rate: nil, crossover_method: nil)
     raise 'parent and mutated vectors must be passed' if parent_vectors == nil || mutated_vectors == nil
     @parent_vectors = parent_vectors
     @mutated_vectors = mutated_vectors
@@ -14,9 +14,9 @@ class DE::CrossoverExecutor
       p_v, m_v = @parent_vectors[i], @mutated_vectors[i]
 
       crossovered_vector = case @crossover_method
-      when :binomial
+      when 'binomial'
         binomial_crossovered_vector(p_v, m_v)
-      when :exponential
+      when 'exponential'
         exponential_crossovered_vector(p_v, m_v)
       else
         raise "crossover method '#{@crossover_method}' is invalid."

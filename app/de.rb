@@ -78,7 +78,7 @@ class DE
 
   def exec_mutation
     mutated_vector_creator = case mutation_method
-    when :current_to_pbest_1
+    when 'current-to-pbest/1'
       (self.class)::MutatedVectorCreator.new \
         @vectors,
         mutation_method: mutation_method,
@@ -86,7 +86,7 @@ class DE
         p: p_to_use_current_to_pbest_mutation,
         f: f,
         archived_vectors: @archived_vectors
-    when :rand_1, :rand_2
+    when 'rand/1', 'rand/2'
       (self.class)::MutatedVectorCreator.new \
         @vectors,
         mutation_method: mutation_method,
@@ -133,7 +133,7 @@ class DE
   end
 
   def use_archive?
-    [:current_to_pbest_1].include?(mutation_method)
+    ['current-to-pbest/1'].include?(mutation_method)
   end
 
   def update_archives_with(new_archives)
@@ -148,9 +148,8 @@ class DE
 
   def parameter_information
     information = [
-      "#{self.class}, f: #{@f.label}, D: #{dimension}, N: #{number_of_vectors}, generation: #{@generation}",
-      '\n' + "evaluation: #{@evaluation_count}, mutation: #{mutation_method}, R: #{mutation_magnification_rate}",
-      '\n' + "crossover : #{@crossover_method}, C: #{crossover_use_mutated_component_rate}, R: #{mutation_magnification_rate}"
+      "#{self.class}, f: #{@f.label}, D: #{dimension}, N: #{number_of_vectors}, generation: #{@generation}, evaluation: #{@evaluation_count}",
+      '\n' + "mutation: #{mutation_method}, crossover : #{@crossover_method}, C: #{crossover_use_mutated_component_rate}, R: #{mutation_magnification_rate}"
     ]
     information << ('\n' + "p for pbest: #{p_to_use_current_to_pbest_mutation}, archive size: #{archived_vectors_size}") if use_archive?
     information.join
