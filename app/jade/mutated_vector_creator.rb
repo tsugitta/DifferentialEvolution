@@ -4,11 +4,6 @@ require_relative '../de/mutated_vector_creator.rb'
 class JADE < DE; end
 
 class JADE::MutatedVectorCreator < DE::MutatedVectorCreator
-  def create
-    @mutation_method = :current_to_pbest_1
-    super
-  end
-
   private
 
   def rand_1_mutated_vector(parent_v)

@@ -11,8 +11,12 @@ class DE
     max_evaluation: 300000,
     initial_value_min: -100,
     initial_value_max: 100,
+    mutation_method: :rand_1,
     mutation_magnification_rate: 0.5,
-    crossover_use_mutated_component_rate: 0.5
+    crossover_method: :binomial,
+    crossover_use_mutated_component_rate: 0.5,
+    p_to_use_current_to_pbest_mutation: 0.1,
+    archived_vectors_size: 50,
   }
 
   attr_reader :f, :vectors, :min_vectors, :time, :generation, :evaluation_count
@@ -23,6 +27,8 @@ class DE
     @f = option[:f]
     f_option = @f != nil ? @f.option : {}
     set_option(DEFAULT_OPTION.merge(f_option).merge(option))
+
+    @archived_vectors = [] if use_archive?
   end
 
   def exec
@@ -66,14 +72,34 @@ class DE
   end
 
   def exec_mutation
-    @mutated_vectors = (self.class)::MutatedVectorCreator.new(@vectors, magnification_rate: mutation_magnification_rate).create
+    mutated_vector_creator = case mutation_method
+    when :current_to_pbest_1
+      (self.class)::MutatedVectorCreator.new \
+        @vectors,
+        mutation_method: mutation_method,
+        magnification_rate: mutation_magnification_rate,
+        p: p_to_use_current_to_pbest_mutation,
+        f: f,
+        archived_vectors: @archived_vectors
+    when :rand_1, :rand_2
+      (self.class)::MutatedVectorCreator.new \
+        @vectors,
+        mutation_method: mutation_method,
+        magnification_rate: mutation_magnification_rate
+    else
+      raise "Invalid mutation method: '#{mutation_method}'"
+    end
+
+    @mutated_vectors = mutated_vector_creator.create
+    @evaluation_count += mutated_vector_creator.evaluation_count
   end
 
   def exec_crossover
     @children_vectors = (self.class)::CrossoverExecutor.new(
       parent_vectors: @vectors,
       mutated_vectors: @mutated_vectors,
-      use_mutated_component_rate: crossover_use_mutated_component_rate
+      use_mutated_component_rate: crossover_use_mutated_component_rate,
+      crossover_method: crossover_method
     ).create_children
   end
 
@@ -87,11 +113,27 @@ class DE
     @evaluation_count += selection_executor.evaluation_count
     @min_vectors << @vectors.min { |a, b| a.calculated_value <=> b.calculated_value }
 
+    update_archives_with(selection_executor.archived_vectors) if use_archive?
+
     selection_executor # use this returned value and extract properties in subclass if needed
   end
 
   def exec_termination_of_ending_generation
     # override this if there is need to do something at ending of each generation
+  end
+
+  def use_archive?
+    [:current_to_pbest_1].include?(mutation_method)
+  end
+
+  def update_archives_with(new_archives)
+    new_archives.each do |new_vector|
+      if @archived_vectors.size >= archived_vectors_size
+        @archived_vectors[rand(archived_vectors_size)] = new_vector
+      else
+        @archived_vectors << new_vector
+      end
+    end
   end
 
   def log_result

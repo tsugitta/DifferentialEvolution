@@ -3,7 +3,7 @@ class DE end
 class DE::MutatedVectorCreator
   attr_reader :evaluation_count
 
-  def initialize(vectors, magnification_rate: nil, mutation_method: :rand_1, p: nil, f: nil, archived_vectors: nil)
+  def initialize(vectors, magnification_rate: nil, mutation_method: nil, p: nil, f: nil, archived_vectors: nil)
     @vectors = vectors
     @magnification_rate = magnification_rate
     @mutation_method = mutation_method

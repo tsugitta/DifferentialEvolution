@@ -7,7 +7,6 @@ class JADE::SelectionExecutor < DE::SelectionExecutor
   attr_reader :archived_vectors, :success_parameters
 
   def create_selected_vectors
-    @archived_vectors = []
     @success_parameters = []
     super
   end

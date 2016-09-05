@@ -1,7 +1,7 @@
 class DE end
 
 class DE::SelectionExecutor
-  attr_reader :evaluation_count
+  attr_reader :evaluation_count, :archived_vectors
 
   def initialize(parents: nil, children: nil, f: nil, evaluation_rest: nil)
     raise 'SelectionExecutor\'s arguments must be passed' if [parents, children, f, evaluation_rest].include?(nil)
@@ -10,6 +10,7 @@ class DE::SelectionExecutor
     @f = f
     @evaluation_rest = evaluation_rest
     @evaluation_count = 0
+    @archived_vectors = []
   end
 
   def create_selected_vectors
@@ -33,7 +34,12 @@ class DE::SelectionExecutor
   private
 
   def better_vector(p_v, c_v)
-    p_v.calculated_value < c_v.calculated_value ? p_v : c_v
+    if p_v.calculated_value < c_v.calculated_value
+      p_v
+    else
+      @archived_vectors << p_v
+      c_v
+    end
   end
 
   def vector_count
