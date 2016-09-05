@@ -30,16 +30,18 @@ class DE::MutatedVectorCreator
 
   # rand/1 mutation
   def rand_1_mutated_vectors
-    raise 'Mutation\'s magnification_rate must be specified.' if @magnification_rate == nil
     mutated_vectors = []
 
     @vectors.each do |parent_v|
-      v_a, v_b, v_c = select_vectors_except(parent_v, 3)
-      mutated_vector = v_a + (v_b - v_c) * @magnification_rate
-      mutated_vectors << mutated_vector
+      mutated_vectors << rand_1_mutated_vector(parent_v)
     end
 
     mutated_vectors
+  end
+
+  def rand_1_mutated_vector(parent_v)
+    v_a, v_b, v_c = select_vectors_except(parent_v, 3)
+    v_a + (v_b - v_c) * @magnification_rate
   end
 
   # rand/2 mutation
@@ -86,7 +88,7 @@ class DE::MutatedVectorCreator
       selected_vectors = selected_vectors_with_rest
         .reject { |v| v == parent_v }
         .sample(count)
-    end while  selected_vectors.empty?
+    end while selected_vectors.size < count
 
     selected_vectors
   end
