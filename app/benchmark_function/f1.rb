@@ -11,7 +11,11 @@ class BenchmarkFunction::F1 < BenchmarkFunction
 
   def calc(v)
     super(v)
-    v.map{ |i| i ** 2 }.inject(:+)
+    calculated_value = v.map{ |i| i ** 2 }.inject(:+)
+    if [Float::INFINITY, Float::NAN].include?(calculated_value)
+      raise 'Cannot continue because of calculated value has become INFINITY or NAN'
+    end
+    calculated_value
   end
 
   def label
