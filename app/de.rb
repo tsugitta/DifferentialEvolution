@@ -48,8 +48,7 @@ class DE
       end
     end
 
-    log_result
-    plot_min_value
+    exec_termination_of_ending_calculation
   end
 
   private
@@ -126,6 +125,11 @@ class DE
 
   def exec_termination_of_ending_generation
     # override this if there is need to do something at ending of each generation
+  end
+
+  def exec_termination_of_ending_calculation
+    log_result
+    plot_min_value
   end
 
   def use_archive?

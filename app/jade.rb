@@ -26,11 +26,13 @@ class JADE < DE
     @parameter_means = Parameter.new \
       initial_magnification_rate_mean,
       initial_use_mutated_component_rate_mean
+    @parameter_mean_history = []
   end
 
   private
 
   def exec_initialization_of_beginning_generation
+    @parameter_mean_history << @parameter_means
     @success_parameters = []
 
     vectors.each do |vector|
@@ -45,6 +47,11 @@ class JADE < DE
 
   def exec_termination_of_ending_generation
     update_parameters
+  end
+
+  def exec_termination_of_ending_calculation
+    super
+    plot_parameter_transition
   end
 
   def create_parameter
@@ -70,5 +77,30 @@ class JADE < DE
 
   def oracle_parameter_information
     super + ('\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, c to use new mean: #{c_to_use_new_rate_mean_weight}")
+  end
+
+  def plot_parameter_transition
+    Gnuplot.open do |gp|
+      Gnuplot::Plot.new(gp) do |plot|
+        plot.title parameter_information
+
+        plot.xlabel 'generation'
+        plot.ylabel 'parameter'
+
+        x_plots = (1..@generation).to_a
+
+        parameter_magnification_rate_plots = @parameter_mean_history.map { |p| p.magnification_rate }
+        plot.data << Gnuplot::DataSet.new([x_plots, parameter_magnification_rate_plots]) do |ds|
+          ds.with = 'lines'
+          ds.title = 'magnification-rate mean'
+        end
+
+        parameter_use_mutated_component_rate_plots = @parameter_mean_history.map { |p| p.use_mutated_component_rate }
+        plot.data << Gnuplot::DataSet.new([x_plots, parameter_use_mutated_component_rate_plots]) do |ds|
+          ds.with = 'lines'
+          ds.title = 'use-mutated-component-rate mean'
+        end
+      end
+    end
   end
 end
