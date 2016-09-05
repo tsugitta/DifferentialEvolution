@@ -17,7 +17,7 @@ module OracleSimulatable
       oracle_parameter = create_oracle_parameter(oracle_simulation_count.to_f / @oracle_simulation_max_count.to_f)
 
       @oracle_parameters << oracle_parameter
-      @parameters << @parameter_means.dup
+      @parameters << @parameter_means
 
       (1..number_of_vectors).each do |vector_number|
         parameter = create_parameter

@@ -63,8 +63,9 @@ class JADE < DE
     return if @success_parameters.empty?
 
     c = c_to_use_new_rate_mean_weight
-    @parameter_means.magnification_rate = (1 - c) * @parameter_means.magnification_rate + c * MathCalculator.lehmer_mean(@success_parameters.map(&:magnification_rate))
-    @parameter_means.use_mutated_component_rate = (1 - c) * @parameter_means.use_mutated_component_rate + c * MathCalculator.arithmetic_mean(@success_parameters.map(&:use_mutated_component_rate))
+    @parameter_means = Parameter.new \
+      (1 - c) * @parameter_means.magnification_rate + c * MathCalculator.lehmer_mean(@success_parameters.map(&:magnification_rate)),
+      (1 - c) * @parameter_means.use_mutated_component_rate + c * MathCalculator.arithmetic_mean(@success_parameters.map(&:use_mutated_component_rate))
   end
 
   def oracle_parameter_information
