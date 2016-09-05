@@ -12,7 +12,7 @@ module OracleSimulatable
     @parameters = []
 
     (1..@oracle_simulation_max_count).each do |oracle_simulation_count|
-      print "\rgeneration: #{oracle_simulation_count}"
+      output_current_simulation_count(oracle_simulation_count)
       @success_parameters = []
       oracle_parameter = create_oracle_parameter(oracle_simulation_count.to_f / @oracle_simulation_max_count.to_f)
 
@@ -31,6 +31,11 @@ module OracleSimulatable
   end
 
   private
+
+  def output_current_simulation_count(count)
+    print "\rgeneration: #{count}/#{@oracle_simulation_max_count}"
+    print "\rdone. printing the result..                       \n" if count >= @oracle_simulation_max_count
+  end
 
   def oracle_parameter_information
     information = [

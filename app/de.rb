@@ -68,8 +68,8 @@ class DE
   end
 
   def output_current_generation
-    print "\rgeneration: #{@generation}"
-    print "\rdone.                   \n" if @generation >= max_generation
+    print "\rgeneration: #{@generation}/#{max_generation}"
+    print "\rdone. printing the result..               \n" if @generation >= max_generation
   end
 
   def exec_initialization_of_beginning_generation
