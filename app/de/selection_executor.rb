@@ -34,7 +34,7 @@ class DE::SelectionExecutor
   private
 
   def better_vector(p_v, c_v)
-    if p_v.calculated_value < c_v.calculated_value
+    if p_v.calculated_value <= c_v.calculated_value
       p_v
     else
       @archived_vectors << p_v
