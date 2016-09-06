@@ -47,7 +47,7 @@ module OracleSimulatable
 
   def oracle_parameter_information
     information = [
-      "#{self.class}, oracle f: #{@oracle_function.label}, checker f: #{@success_checker.label}, N: #{number_of_vectors}, generation: #{max_generation}, r: #{sprintf('%.3f', @check_success_count.to_f / @check_count.to_f)}"
+      "#{self.class}, oracle f: #{@oracle_function.label}, checker f: #{@success_checker.label}, N: #{number_of_vectors}, generation: #{max_generation}, r: #{sprintf('%.3e', @check_success_count.to_f / @check_count.to_f)}"
     ]
     information << ('\n' + "p for pbest: #{p_to_use_current_to_pbest_mutation}, archive size: #{archived_vectors_size}") if use_archive?
     information.join

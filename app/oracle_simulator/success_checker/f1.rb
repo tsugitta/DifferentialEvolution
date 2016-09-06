@@ -10,12 +10,16 @@ class OracleSimulator::SuccessChecker::F1 < OracleSimulator::SuccessChecker
     beta:  0.1
   }
 
+  def initialize(option = {})
+    @option = OPTION.merge(option)
+  end
+
   def succeeded?(oracle_parameter, parameter)
     rand < success_rate(oracle_parameter, parameter)
   end
 
   def label
-    "Line(alpha: #{OPTION[:alpha]}, beta: #{OPTION[:beta]})"
+    "Line(alpha: #{@option[:alpha]}, beta: #{@option[:beta]})"
   end
 
   private
@@ -32,7 +36,7 @@ class OracleSimulator::SuccessChecker::F1 < OracleSimulator::SuccessChecker
 
   def success_rate(p_a, p_b)
     [
-      -1 * OPTION[:alpha] * distance(p_a, p_b) + OPTION[:beta],
+      -1 * @option[:alpha] * distance(p_a, p_b) + @option[:beta],
       0
     ].max
   end
