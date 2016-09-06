@@ -93,5 +93,14 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 =end
-  Dir.glob(File.join(File.dirname(__FILE__), "../app/**/*.rb")).each { |f| require f }
+
+  loading_file_name_regexps = %w(../app/*.rb ../app/**/*.rb)
+  execution_files = %w(main.rb oracle_simulation.rb)
+
+  loading_file_name_regexps.each do |loading_regexp|
+    Dir.glob(File.join(File.dirname(__FILE__), loading_regexp)).reject { |f|
+      execution_files.any?{ |e_f|
+        f.include?(e_f)}
+    }.each { |f| require f }
+  end
 end
