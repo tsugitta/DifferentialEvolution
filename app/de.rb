@@ -41,6 +41,7 @@ class DE
       @min_vectors = []
 
       loop do
+        exec_initialization_before_beginning_generation
         output_current_generation
         break if generation >= max_generation || evaluation_count >= max_evaluation
         exec_initialization_of_beginning_generation
@@ -81,6 +82,10 @@ class DE
   def output_current_generation
     print "\rgeneration: #{@generation}/#{max_generation}"
     print "\rdone. printing the result..               \n" if @generation >= max_generation
+  end
+
+  def exec_initialization_before_beginning_generation
+    # override this if there is need to do something before beginning of each generation
   end
 
   def exec_initialization_of_beginning_generation

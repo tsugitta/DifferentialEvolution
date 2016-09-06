@@ -4,6 +4,10 @@ module ParameterTransitionPlottable
     plot_parameter_transition
   end
 
+  def parameter_transition_plot_value
+    raise "#{__METHOD__} must be implemented."
+  end
+
   def plot_parameter_transition
     Gnuplot.open do |gp|
       Gnuplot::Plot.new(gp) do |plot|
@@ -12,17 +16,13 @@ module ParameterTransitionPlottable
         plot.xlabel 'generation'
         plot.ylabel 'parameter'
 
-        x_plots = (1..@generation).to_a
-
-        parameter_magnification_rate_plots = @parameter_mean_history.map { |p| p.magnification_rate }
-        plot.data << Gnuplot::DataSet.new([x_plots, parameter_magnification_rate_plots]) do |ds|
-          ds.with = 'lines'
+        plot.data << Gnuplot::DataSet.new(parameter_transition_plot_value[:magnification_rate]) do |ds|
+          ds.with = 'lines' if parameter_transition_plot_value[:magnification_rate].first.size == @generation
           ds.title = 'magnification-rate mean'
         end
 
-        parameter_use_mutated_component_rate_plots = @parameter_mean_history.map { |p| p.use_mutated_component_rate }
-        plot.data << Gnuplot::DataSet.new([x_plots, parameter_use_mutated_component_rate_plots]) do |ds|
-          ds.with = 'lines'
+        plot.data << Gnuplot::DataSet.new(parameter_transition_plot_value[:use_mutated_component_rate]) do |ds|
+          ds.with = 'lines' if parameter_transition_plot_value[:use_mutated_component_rate].first.size == @generation
           ds.title = 'use-mutated-component-rate mean'
         end
       end

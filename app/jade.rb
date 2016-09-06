@@ -36,13 +36,20 @@ class JADE < DE
     @selection_executor_klass = DE::ParameterSaveableSelectionExecutor
   end
 
+  def exec_initialization_before_beginning_generation
+    save_parameter_to_history
+  end
+
   def exec_initialization_of_beginning_generation
-    @parameter_mean_history << @parameter_means
     @success_parameters = []
 
     vectors.each do |vector|
       vector.parameter = create_parameter
     end
+  end
+
+  def save_parameter_to_history
+    @parameter_mean_history << @parameter_means
   end
 
   def exec_selection
@@ -76,6 +83,18 @@ class JADE < DE
   end
 
   def oracle_parameter_information
-    super + ('\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, c to use new mean: #{c_to_use_new_rate_mean_weight}")
+    super + [
+      '\n' + "initial R: #{initial_magnification_rate_mean}, initial C: #{initial_use_mutated_component_rate_mean}",
+      '\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, c to use new mean: #{c_to_use_new_rate_mean_weight}"
+    ].join
+  end
+
+  def parameter_transition_plot_value
+    x_plots = (1..@generation).to_a
+
+    {
+      magnification_rate: [x_plots, @parameter_mean_history.map { |p| p.magnification_rate }],
+      use_mutated_component_rate: [x_plots, @parameter_mean_history.map { |p| p.use_mutated_component_rate}]
+    }
   end
 end
