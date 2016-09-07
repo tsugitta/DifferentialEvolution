@@ -10,31 +10,32 @@ oracle_f1 = OracleSimulator::Function::F1.new \
   beta: 0.5
 oracle_f2 = OracleSimulator::Function::F2.new \
   alpha: 0.3,
-  omega: 3,
+  omega: 20,
   beta: 0.5
 oracle_f3 = OracleSimulator::Function::F3.new \
   initial_value: 0.5,
   step: 0.005
 
 success_checker = OracleSimulator::SuccessChecker::F1.new \
-  alpha: 3,
-  beta: 0.05
+  alpha: 1,
+  beta: 0.1
 
-de = SHADE.new(
+de = JADE.new(
   number_of_vectors: 50,
   max_generation: 20000,
   p_to_use_current_to_pbest_mutation: 0.1,
+  mutation_magnification_rate: 0.3,
+  crossover_use_mutated_component_rate: 0.5,
 
-  # JADE options:
-  initial_magnification_rate_mean: 0.5,
-  initial_use_mutated_component_rate_mean: 0.5,
+  # JADE, SHADE options:
   normal_distribution_sigma: 0.1,
   cauchy_distribution_gamma: 0.1,
-  c_to_use_new_rate_mean_weight: 0.1,
+
+  # JADE options:
+  c_to_use_new_rate_mean_weight: 0.2,
 
   # SHADE options:
   memory_size: 3,
-  initial_magnification_rate: 0.5,
-  initial_use_mutated_component_rate: 0.5
 )
+
 de.oracle_simulate(oracle_f2, success_checker)

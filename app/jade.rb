@@ -7,8 +7,6 @@ class JADE < DE
   include ParameterTransitionPlottable
 
   JADE_DEFAULT_OPTION = {
-    initial_magnification_rate_mean: 0.5,
-    initial_use_mutated_component_rate_mean: 0.5,
     normal_distribution_sigma: 0.1,
     cauchy_distribution_gamma: 0.1,
     c_to_use_new_rate_mean_weight: 0.1
@@ -22,8 +20,8 @@ class JADE < DE
     super(option)
 
     @parameter_means = Parameter.new \
-      initial_magnification_rate_mean,
-      initial_use_mutated_component_rate_mean
+      mutation_magnification_rate,
+      crossover_use_mutated_component_rate
     @parameter_mean_history = []
   end
 
@@ -82,9 +80,15 @@ class JADE < DE
       (1 - c) * @parameter_means.use_mutated_component_rate + c * MathCalculator.arithmetic_mean(@success_parameters.map(&:use_mutated_component_rate))
   end
 
+  def parameter_information
+    information = super
+    information += ('\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, c to use new parameter: #{c_to_use_new_rate_mean_weight}")
+    information
+  end
+
   def oracle_parameter_information
     super + [
-      '\n' + "initial R: #{initial_magnification_rate_mean}, initial C: #{initial_use_mutated_component_rate_mean}",
+      '\n' + "initial R: #{mutation_magnification_rate}, initial C: #{crossover_use_mutated_component_rate}",
       '\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, c to use new mean: #{c_to_use_new_rate_mean_weight}"
     ].join
   end

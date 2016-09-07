@@ -8,8 +8,6 @@ class SHADE < DE
 
   SHADE_DEFAULT_OPTION = {
     memory_size: 10,
-    initial_magnification_rate: 0.5,
-    initial_use_mutated_component_rate: 0.5,
     normal_distribution_sigma: 0.1,
     cauchy_distribution_gamma: 0.1
   }
@@ -27,8 +25,8 @@ class SHADE < DE
   private
 
   def initialize_memory
-    @magnification_rate_memory = Array.new(memory_size, initial_magnification_rate)
-    @use_mutated_component_rate_memory = Array.new(memory_size, initial_use_mutated_component_rate)
+    @magnification_rate_memory = Array.new(memory_size, mutation_magnification_rate)
+    @use_mutated_component_rate_memory = Array.new(memory_size, crossover_use_mutated_component_rate)
 
     @parameter_memory_history = {
       magnification_rate: Array.new(memory_size) { [] },
@@ -93,8 +91,17 @@ class SHADE < DE
     @use_mutated_component_rate_memory[memory_index] = MathCalculator.lehmer_mean(@success_parameters.map(&:use_mutated_component_rate))
   end
 
+  def parameter_information
+    information = super
+    information += ('\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, memory size: #{memory_size}")
+    information
+  end
+
   def oracle_parameter_information
-    super + ('\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, memory size: #{memory_size}")
+    super + [
+      '\n' + "initial R: #{mutation_magnification_rate}, initial C: #{crossover_use_mutated_component_rate}",
+      '\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, memory size: #{memory_size}"
+    ].join
   end
 
   def parameter_transition_plot_value
