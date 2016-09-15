@@ -22,6 +22,8 @@ module OracleSimulatable
       break if @generation >= max_generation
 
       @success_parameters = []
+      @fail_parameters = []
+
       oracle_parameter = create_oracle_parameter(@generation.to_f / max_generation.to_f)
 
       @oracle_parameters << oracle_parameter
@@ -100,6 +102,8 @@ module OracleSimulatable
     if @success_checker.succeeded?(oracle_parameter, parameter)
       @check_success_count += 1
       @success_parameters << parameter
+    else
+      @fail_parameters << parameter
     end
   end
 end
