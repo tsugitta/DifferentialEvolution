@@ -27,7 +27,7 @@ success_checker_f2 = OracleSimulator::SuccessChecker::F2.new \
 
 de = OSADE.new(
   number_of_vectors: 50,
-  max_generation: 20000,
+  max_generation: 4000,
   p_to_use_current_to_pbest_mutation: 0.1,
   mutation_magnification_rate: 0.5,
   crossover_use_mutated_component_rate: 0.5,
@@ -37,13 +37,14 @@ de = OSADE.new(
   cauchy_distribution_gamma: 0.1,
 
   # JADE options:
-  c_to_use_new_rate_mean_weight: 0.2,
+  c_to_use_new_rate_mean_weight: 0.1,
 
   # SHADE options:
-  memory_size: 3,
+  memory_size: 5,
 
   # OBADE options:
-  osade_success_checker: success_checker_f2
+  osade_success_checker: success_checker_f2,
+  number_of_generation_parameter_result_saved: 100
 )
 
-de.oracle_simulate(oracle_f2, success_checker_f1)
+de.oracle_simulate(oracle_f2, success_checker_f2)

@@ -10,7 +10,8 @@ class OSADE < DE
     osade_success_checker: nil,
     step_width: 0.01,
     normal_distribution_sigma: 0.1,
-    cauchy_distribution_gamma: 0.1
+    cauchy_distribution_gamma: 0.1,
+    number_of_generation_parameter_result_saved: 100
   }
 
   attr_reader(*OSADE_DEFAULT_OPTION.keys)
@@ -25,6 +26,11 @@ class OSADE < DE
       mutation_magnification_rate,
       crossover_use_mutated_component_rate
     @parameter_mean_history = []
+
+    @parameter_history = {
+      success: [],
+      fail: []
+    }
   end
 
   private
@@ -76,16 +82,24 @@ class OSADE < DE
   end
 
   def update_parameters
-    return if @success_parameters.empty? || @fail_parameters.empty?
+    @parameter_history[:success] << @success_parameters
+    @parameter_history[:fail] << @success_parameters
+
+    if @parameter_history[:success].size > number_of_generation_parameter_result_saved
+      @parameter_history[:success].shift
+      @parameter_history[:fail].shift
+    end
+
+    return if success_parameters.empty? || fail_parameters.empty?
 
     @parameter_means = get_oracle_parameter
   end
 
   def get_oracle_parameter
-    min_magnification_rate = @success_parameters.map(&:magnification_rate).min
-    max_magnification_rate = @success_parameters.map(&:magnification_rate).max
-    min_use_mutated_component_rate = @success_parameters.map(&:use_mutated_component_rate).min
-    max_use_mutated_component_rate = @success_parameters.map(&:use_mutated_component_rate).max
+    min_magnification_rate = success_parameters.map(&:magnification_rate).min
+    max_magnification_rate = success_parameters.map(&:magnification_rate).max
+    min_use_mutated_component_rate = success_parameters.map(&:use_mutated_component_rate).min
+    max_use_mutated_component_rate = success_parameters.map(&:use_mutated_component_rate).max
 
     oracle_parameter = nil
     producted_probability = 0
@@ -95,11 +109,11 @@ class OSADE < DE
         oracle_parameter_candidate = Parameter.new(f, c)
         producted_probability_candidate = 1
 
-        @success_parameters.each do |parameter|
+        success_parameters.each do |parameter|
           producted_probability_candidate *= osade_success_checker.success_rate(oracle_parameter_candidate, parameter)
         end
 
-        @fail_parameters.each do |parameter|
+        fail_parameters.each do |parameter|
           producted_probability_candidate *= (1 - osade_success_checker.success_rate(oracle_parameter_candidate, parameter))
         end
 
@@ -113,16 +127,24 @@ class OSADE < DE
     oracle_parameter
   end
 
+  def success_parameters
+    @parameter_history[:success].flatten
+  end
+
+  def fail_parameters
+    @parameter_history[:fail].flatten
+  end
+
   def parameter_information
     information = super
-    information += ('\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, success checker: #{osade_success_checker.label}")
+    information += ('\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, success checker: #{osade_success_checker.label}, hitsory size: #{number_of_generation_parameter_result_saved}")
     information
   end
 
   def oracle_parameter_information
     super + [
       '\n' + "initial R: #{mutation_magnification_rate}, initial C: #{crossover_use_mutated_component_rate}",
-      '\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, success checker: #{osade_success_checker.label}"
+      '\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, success checker: #{osade_success_checker.label}, history size: #{number_of_generation_parameter_result_saved}"
     ].join
   end
 
