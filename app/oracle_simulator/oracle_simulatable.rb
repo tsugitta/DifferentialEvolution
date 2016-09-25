@@ -37,6 +37,7 @@ module OracleSimulatable
       @generation += 1
     end
 
+    log_result
     plot_parameters
   end
 
@@ -53,6 +54,12 @@ module OracleSimulatable
     ]
     information << ('\n' + "p for pbest: #{p_to_use_current_to_pbest_mutation}, archive size: #{archived_vectors_size}") if use_archive?
     information.join
+  end
+
+  def log_result
+    puts <<~EOS
+    #{oracle_parameter_information.gsub(/(, )|\\n/, "\n")}
+    EOS
   end
 
   def plot_parameters
