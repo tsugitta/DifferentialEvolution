@@ -16,13 +16,13 @@ module BenchmarkFunction::Helper
         alpha**(0.5 * i / (dim - 1))
       end
 
-      Matrix[
-        lambdas.map.with_index do |l, l_i|
-          Array.new(dim) do |a_i|
-            a_i == l_i ? l : 0
-          end
+      elements = lambdas.map.with_index do |l, l_i|
+        Array.new(dim) do |a_i|
+          a_i == l_i ? l : 0
         end
-      ]
+      end
+
+      Matrix.rows(elements, false)
     end
 
     # -1 and 1 appears with same possibility
@@ -51,7 +51,7 @@ module BenchmarkFunction::Helper
     # used in T_osz
     def hat(x)
       return 0 if x == 0
-      Math.log(x)
+      Math.log(x.abs)
     end
 
     # used in T_osz

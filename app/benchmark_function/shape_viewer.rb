@@ -1,7 +1,7 @@
 class BenchmarkFunction::ShapeViewer
-  DOT_COUNT_ON_A_POSITIVE_LINE = 20
+  DOT_COUNT_ON_A_POSITIVE_LINE = 100
 
-  def show(f:, max: 30)
+  def show(f:, max: 30, map: false)
     Gnuplot.open do |gp|
       Gnuplot::SPlot.new( gp ) do |plot|
         plot.title f.label
@@ -12,7 +12,7 @@ class BenchmarkFunction::ShapeViewer
         plot.set "hidden3d"
         plot.set "style fill  transparent solid 0.60 border"
         # show 2d mapping
-        # plot.set "view map"
+        plot.set "view map" if map
 
         xs, ys, zs = [], [], []
 
