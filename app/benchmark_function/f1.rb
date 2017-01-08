@@ -1,5 +1,3 @@
-class BenchmarkFunction end
-
 # Sphere
 class BenchmarkFunction::F1 < BenchmarkFunction
   def option
@@ -9,12 +7,12 @@ class BenchmarkFunction::F1 < BenchmarkFunction
     }
   end
 
-  def calc(v)
-    super(v)
-    calculated_value = v.map{ |i| i ** 2 }.inject(:+)
-    if [Float::INFINITY, Float::NAN].include?(calculated_value)
-      raise 'Cannot continue because of calculated value has become INFINITY or NAN'
-    end
+  def calc(v, min: 0)
+    check_vector_type(v)
+
+    calculated_value = v.norm ** 2 + min
+
+    check_calculated_value_type(calculated_value)
     calculated_value
   end
 
