@@ -1,5 +1,9 @@
 module BenchmarkFunction::Helper
   class << self
+    def penalty(v)
+      v.map { |e| [0, e.abs - 5].max**2 }.inject(:+)
+    end
+
     def zeros(dim:)
       array = Array.new(dim, 0)
       Vector.elements(array, false)
