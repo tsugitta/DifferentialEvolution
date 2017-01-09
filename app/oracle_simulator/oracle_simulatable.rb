@@ -37,7 +37,7 @@ module OracleSimulatable
       @generation += 1
     end
 
-    log_result
+    log_oracle_simulation_result
     plot_parameters
   end
 
@@ -56,7 +56,7 @@ module OracleSimulatable
     information.join
   end
 
-  def log_result
+  def log_oracle_simulation_result
     puts <<~EOS
     #{oracle_parameter_information.gsub(/(, )|\\n/, "\n")}
     EOS
