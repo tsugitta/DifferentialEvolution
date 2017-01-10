@@ -1,5 +1,3 @@
-class DE end
-
 class DE::InitialVectorCreator
   def initialize(dimension: nil, min: nil, max: nil)
     raise 'dimension: Int must be passed' unless dimension.is_a?(Integer)

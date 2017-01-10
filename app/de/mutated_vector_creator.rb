@@ -1,11 +1,9 @@
-class DE end
-
 class DE::MutatedVectorCreator
   attr_reader :evaluation_count
 
-  def initialize(vectors, magnification_rate: nil, mutation_method: nil, p: nil, f: nil, archived_vectors: nil)
+  def initialize(vectors, parameters: nil, mutation_method: nil, p: nil, f: nil, archived_vectors: nil)
     @vectors = vectors
-    @magnification_rate = magnification_rate
+    @parameters = parameters
     @mutation_method = mutation_method
     @p = p
     @f = f
@@ -32,10 +30,10 @@ class DE::MutatedVectorCreator
   def rand_1_mutated_vectors
     mutated_vectors = []
 
-    @vectors.each do |parent_v|
-      set_magnification_rate(parent_v)
+    @vectors.each.with_index do |parent_v, i|
+      magnification_rate = @parameters[i].magnification_rate
       v_a, v_b, v_c = select_vectors_except(parent_v, 3)
-      mutated_vectors << v_a + (v_b - v_c) * @magnification_rate
+      mutated_vectors << v_a + (v_b - v_c) * magnification_rate
     end
 
     mutated_vectors
@@ -46,10 +44,10 @@ class DE::MutatedVectorCreator
     raise 'Mutation\'s magnification_rate must be specified.' if magnification_rate == nil
     mutated_vectors = []
 
-    @vectors.each do |parent_v|
-      set_magnification_rate(parent_v)
+    @vectors.each.with_index do |parent_v, i|
+      magnification_rate = @parameters[i].magnification_rates
       v_a, v_b, v_c, v_d, v_e = select_vectors_except(parent_v, 5)
-      mutated_vector = v_a + (v_b - v_c) * @magnification_rate + (v_d - v_e) * @magnification_rate
+      mutated_vector = v_a + (v_b - v_c) * magnification_rate + (v_d - v_e) * magnification_rate
       mutated_vectors << mutated_vector
     end
 
@@ -66,12 +64,12 @@ class DE::MutatedVectorCreator
     p_candidates = vectors_sorted_desc_by_score.first([(@p * vector_size).floor, 2].max)
     v_b_candidates = @vectors + @archived_vectors
 
-    @vectors.each do |parent_v|
-      set_magnification_rate(parent_v)
+    @vectors.each.with_index do |parent_v, i|
+      magnification_rate = @parameters[i].magnification_rate
       v_p = p_candidates.sample
       v_a = select_vectors_except(parent_v, 1).first
       v_b = v_b_candidates.sample
-      mutated_vectors << parent_v + (v_p - parent_v) * @magnification_rate + (v_a - v_b) * @magnification_rate
+      mutated_vectors << parent_v + (v_p - parent_v) * magnification_rate + (v_a - v_b) * magnification_rate
     end
 
     mutated_vectors
@@ -94,10 +92,6 @@ class DE::MutatedVectorCreator
       evaluate(v_b) unless v_b.calculated_value
       v_a.calculated_value <=> v_b.calculated_value # the lower value, the higher score
     end
-  end
-
-  def set_magnification_rate(parent_v)
-    # override this and set @magnification_rate if needed
   end
 
   def vector_size

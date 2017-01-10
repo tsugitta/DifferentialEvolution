@@ -1,9 +1,9 @@
 class DE::CrossoverExecutor
-  def initialize(parent_vectors: nil, mutated_vectors: nil, use_mutated_component_rate: nil, crossover_method: nil)
+  def initialize(parent_vectors: nil, mutated_vectors: nil, parameters: nil, crossover_method: nil)
     raise 'parent and mutated vectors must be passed' if parent_vectors == nil || mutated_vectors == nil
     @parent_vectors = parent_vectors
     @mutated_vectors = mutated_vectors
-    @use_mutated_component_rate = use_mutated_component_rate
+    @parameters = parameters
     @crossover_method = crossover_method
   end
 
@@ -11,13 +11,13 @@ class DE::CrossoverExecutor
     children = []
 
     vector_count.times do |i|
-      p_v, m_v = @parent_vectors[i], @mutated_vectors[i]
+      p_v, m_v, parameter = @parent_vectors[i], @mutated_vectors[i], @parameters[i]
 
       crossovered_vector = case @crossover_method
       when 'binomial'
-        binomial_crossovered_vector(p_v, m_v)
+        binomial_crossovered_vector(p_v, m_v, parameter)
       when 'exponential'
-        exponential_crossovered_vector(p_v, m_v)
+        exponential_crossovered_vector(p_v, m_v, parameter)
       else
         raise "crossover method '#{@crossover_method}' is invalid."
       end
@@ -30,13 +30,12 @@ class DE::CrossoverExecutor
 
   private
 
-  def binomial_crossovered_vector(p_v, m_v)
-    set_use_mutated_component_rate(p_v)
+  def binomial_crossovered_vector(p_v, m_v, parameter)
     child_components = []
     must_use_mutated_index = rand(dim) - 1
 
     dim.times do |d|
-      child_components[d] = if d == must_use_mutated_index || use_mutated_component?
+      child_components[d] = if d == must_use_mutated_index || use_mutated_component?(parameter)
         m_v[d]
       else
         p_v[d]
@@ -46,8 +45,7 @@ class DE::CrossoverExecutor
     Vector.elements(child_components, false)
   end
 
-  def exponential_crossovered_vector(p_v, m_v)
-    set_use_mutated_component_rate(p_v)
+  def exponential_crossovered_vector(p_v, m_v, parameter)
     child_components = p_v.to_a
     k, j = 1, rand(dim)
 
@@ -55,7 +53,7 @@ class DE::CrossoverExecutor
       child_components[j] = m_v[j]
       k += 1
       j = (j + 1) % dim
-    end while use_mutated_component? && k < dim
+    end while use_mutated_component?(parameter) && k < dim
 
     Vector.elements(child_components, false)
   end
@@ -72,8 +70,7 @@ class DE::CrossoverExecutor
     @dim ||= @parent_vectors.first.size
   end
 
-  def use_mutated_component?
-    raise 'use_mutated_component_rate must be passed' if @use_mutated_component_rate == nil
-    rand < @use_mutated_component_rate
+  def use_mutated_component?(parameter)
+    rand < parameter.use_mutated_component_rate
   end
 end

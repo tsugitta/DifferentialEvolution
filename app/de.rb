@@ -1,11 +1,3 @@
-require_relative './de/initial_vector_creator.rb'
-require_relative './de/mutated_vector_creator.rb'
-require_relative './de/parameter_changeable_mutated_vector_creator.rb'
-require_relative './de/crossover_executor.rb'
-require_relative './de/parameter_changeable_crossover_executor.rb'
-require_relative './de/selection_executor.rb'
-require_relative './de/parameter_saveable_selection_executor.rb'
-
 class DE
   DEFAULT_OPTION = {
     dimension: 2,
@@ -89,7 +81,7 @@ class DE
   end
 
   def exec_initialization_of_beginning_generation
-    # override this if there is need to do something at begininng of each generation
+    @parameters = Array.new(vectors.count) { create_parameter }
   end
 
   def exec_mutation
@@ -97,16 +89,16 @@ class DE
     when 'current-to-pbest/1'
       @mutated_vector_creator_klass.new \
         @vectors,
+        parameters: @parameters,
         mutation_method: mutation_method,
-        magnification_rate: mutation_magnification_rate,
         p: p_to_use_current_to_pbest_mutation,
         f: f,
         archived_vectors: @archived_vectors
     when 'rand/1', 'rand/2'
       @mutated_vector_creator_klass.new \
         @vectors,
-        mutation_method: mutation_method,
-        magnification_rate: mutation_magnification_rate
+        parameters: @parameters,
+        mutation_method: mutation_method
     else
       raise "Invalid mutation method: '#{mutation_method}'"
     end
@@ -119,7 +111,7 @@ class DE
     @children_vectors = @crossover_executor_klass.new(
       parent_vectors: @vectors,
       mutated_vectors: @mutated_vectors,
-      use_mutated_component_rate: crossover_use_mutated_component_rate,
+      parameters: @parameters,
       crossover_method: crossover_method
     ).create_children
   end
@@ -128,6 +120,7 @@ class DE
     selection_executor = @selection_executor_klass.new \
       parents: @vectors,
       children: @children_vectors,
+      parameters: @parameters,
       f: f,
       evaluation_rest: max_evaluation - @evaluation_count
     @vectors = selection_executor.create_selected_vectors
@@ -146,6 +139,12 @@ class DE
   def exec_termination_of_ending_calculation
     log_result
     plot_min_value
+  end
+
+  def create_parameter
+    Parameter.new \
+      mutation_magnification_rate,
+      crossover_use_mutated_component_rate
   end
 
   def use_archive?
@@ -199,3 +198,10 @@ class DE
     end
   end
 end
+
+require_relative './de/initial_vector_creator.rb'
+require_relative './de/mutated_vector_creator.rb'
+require_relative './de/parameter_changeable_mutated_vector_creator.rb'
+require_relative './de/crossover_executor.rb'
+require_relative './de/parameter_changeable_crossover_executor.rb'
+require_relative './de/selection_executor.rb'

@@ -38,19 +38,11 @@ class SHADE < DE
     @initial_vector_creator_klass = DE::InitialVectorCreator
     @mutated_vector_creator_klass = DE::ParameterChangeableMutatedVectorCreator
     @crossover_executor_klass = DE::ParameterChangeableCrossoverExecutor
-    @selection_executor_klass = DE::ParameterSaveableSelectionExecutor
+    @selection_executor_klass = DE::SelectionExecutor
   end
 
   def exec_initialization_before_beginning_generation
     save_parameter_to_history
-  end
-
-  def exec_initialization_of_beginning_generation
-    @success_parameters = []
-
-    vectors.each do |vector|
-      vector.parameter = create_parameter
-    end
   end
 
   def save_parameter_to_history
@@ -62,7 +54,7 @@ class SHADE < DE
 
   def exec_selection
     selection_executor = super
-    @success_parameters += selection_executor.success_parameters
+    @parameters = selection_executor.value_assigned_parameters
   end
 
   def exec_termination_of_ending_generation
@@ -84,11 +76,15 @@ class SHADE < DE
   end
 
   def update_parameters
-    return if @success_parameters.empty?
+    success_parameters = @parameters.select do |p|
+      p.calculated_value_diff < 0
+    end
+
+    return if success_parameters.empty?
 
     memory_index = @generation % memory_size
-    @magnification_rate_memory[memory_index] = MathCalculator.lehmer_mean(@success_parameters.map(&:magnification_rate))
-    @use_mutated_component_rate_memory[memory_index] = MathCalculator.lehmer_mean(@success_parameters.map(&:use_mutated_component_rate))
+    @magnification_rate_memory[memory_index] = MathCalculator.lehmer_mean(success_parameters.map(&:magnification_rate))
+    @use_mutated_component_rate_memory[memory_index] = MathCalculator.lehmer_mean(success_parameters.map(&:use_mutated_component_rate))
   end
 
   def parameter_information

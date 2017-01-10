@@ -1,12 +1,11 @@
-class DE end
-
 class DE::SelectionExecutor
-  attr_reader :evaluation_count, :archived_vectors
+  attr_reader :evaluation_count, :archived_vectors, :value_assigned_parameters
 
-  def initialize(parents: nil, children: nil, f: nil, evaluation_rest: nil)
+  def initialize(parents: nil, children: nil, parameters: nil, f: nil, evaluation_rest: nil)
     raise 'SelectionExecutor\'s arguments must be passed' if [parents, children, f, evaluation_rest].include?(nil)
     @parents = parents
     @children = children
+    @value_assigned_parameters = parameters.dup
     @f = f
     @evaluation_rest = evaluation_rest
     @evaluation_count = 0
@@ -17,13 +16,13 @@ class DE::SelectionExecutor
     selected_vectors = []
 
     vector_count.times do |i|
-      p_v, c_v = @parents[i], @children[i]
+      p_v, c_v, parameter = @parents[i], @children[i], @value_assigned_parameters[i]
 
       evaluate(p_v) unless p_v.calculated_value
       break if @evaluation_count >= @evaluation_rest
       evaluate(c_v)
 
-      selected_vectors << better_vector(p_v, c_v)
+      selected_vectors << better_vector(p_v, c_v, parameter)
       break if @evaluation_count >= @evaluation_rest
     end
 
@@ -33,23 +32,15 @@ class DE::SelectionExecutor
 
   private
 
-  def better_vector(p_v, c_v)
-    if p_v.calculated_value <= c_v.calculated_value
-      exec_when_parent_vector_is_better(p_v, c_v)
+  def better_vector(p_v, c_v, parameter)
+    parameter.calculated_value_diff = c_v.calculated_value - p_v.calculated_value
+
+    if parameter.calculated_value_diff >= 0
       p_v
     else
-      exec_when_child_vector_is_better(p_v, c_v)
       @archived_vectors << p_v
       c_v
     end
-  end
-
-  def exec_when_parent_vector_is_better(p_v, c_v)
-    # override this if needed
-  end
-
-  def exec_when_child_vector_is_better(p_v, c_v)
-    # override this if needed
   end
 
   def vector_count
