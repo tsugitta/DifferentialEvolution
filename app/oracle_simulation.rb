@@ -6,6 +6,11 @@ require_relative './jade.rb'
 require_relative './shade.rb'
 require_relative './osade.rb'
 
+if %w(c console).include?ARGV.first
+  binding.pry
+  exit
+end
+
 oracle_f1 = OracleSimulator::Function::F1.new \
   alpha: -0.1,
   beta: 0.5

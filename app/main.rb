@@ -4,7 +4,12 @@ require_relative './de.rb'
 require_relative './jade.rb'
 require_relative './shade.rb'
 
-f = BenchmarkFunction::F1.new
+if %w(c console).include?ARGV.first
+  binding.pry
+  exit
+end
+
+f = BenchmarkFunction::F5.new(dim: 20)
 de = JADE.new \
   f: f,
   dimension: 20,
