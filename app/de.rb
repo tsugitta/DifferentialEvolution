@@ -201,7 +201,5 @@ end
 
 require_relative './de/initial_vector_creator.rb'
 require_relative './de/mutated_vector_creator.rb'
-require_relative './de/parameter_changeable_mutated_vector_creator.rb'
 require_relative './de/crossover_executor.rb'
-require_relative './de/parameter_changeable_crossover_executor.rb'
 require_relative './de/selection_executor.rb'
