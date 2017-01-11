@@ -1,4 +1,11 @@
 class BenchmarkFunction
+  def option
+    {
+      initial_value_min: -5,
+      initial_value_max:  5
+    }
+  end
+
   def calc(v)
     raise NotImplementedError
   end
@@ -8,7 +15,7 @@ class BenchmarkFunction
   end
 
   def check_calculated_value_type(value)
-    if [Float::INFINITY, Float::NAN].include?(value)
+    if value == Float::INFINITY || value.to_f.nan?
       raise 'Cannot continue because of calculated value has become INFINITY or NAN'
     end
   end

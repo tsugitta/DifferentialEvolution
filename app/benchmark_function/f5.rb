@@ -1,12 +1,5 @@
 # Linear Slope
 class BenchmarkFunction::F5 < BenchmarkFunction
-  def option
-    {
-      initial_value_min: -100,
-      initial_value_max:  100
-    }
-  end
-
   def initialize(dim:)
     @dim = dim
   end
@@ -35,7 +28,7 @@ class BenchmarkFunction::F5 < BenchmarkFunction
 
   def s(v)
     v.map.with_index do |e, i|
-      h.sign(x_opt[i]) * 10**(i / @dim)
+      h.sign(x_opt[i]) * 10**(i / (@dim - 1))
     end
   end
 

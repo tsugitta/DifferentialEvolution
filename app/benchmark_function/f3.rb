@@ -1,12 +1,5 @@
 # Rastrigin
 class BenchmarkFunction::F3 < BenchmarkFunction
-  def option
-    {
-      initial_value_min: -100,
-      initial_value_max:  100
-    }
-  end
-
   def calc(v, min: 0)
     check_vector_type(v)
 
