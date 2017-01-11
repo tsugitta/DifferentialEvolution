@@ -4,7 +4,7 @@ require_relative './de.rb'
 require_relative './jade.rb'
 require_relative './shade.rb'
 
-if %w(c console).include?ARGV.first
+if %w(c console).include?(ARGV.first)
   binding.pry
   exit
 end
