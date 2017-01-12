@@ -12,11 +12,11 @@ if %w(c console).include?(ARGV.first)
 end
 
 f = BenchmarkFunction::F1.new
-de = SJADE.new \
+options = {
   f: f,
   dimension: 20,
   number_of_vectors: 50,
-  max_generation: 1000,
+  max_generation: 2000,
   max_evaluation: 300000,
 
   mutation_method: 'current-to-pbest/1',
@@ -42,17 +42,34 @@ de = SJADE.new \
 
   # SJADE options:
   ratio_to_regard_as_success: 0.5
+}
 
-de.exec
+trial_num = 9 # Assume this is odd
+jades = Array.new(trial_num) { JADE.new(options) }
+sjades = Array.new(trial_num) { SJADE.new(options) }
 
-min = de.min_vectors.map { |v| v.calculated_value }
+jades.each(&:exec)
+sjades.each(&:exec)
+
+center_index = (trial_num - 1) / 2
+median_jade = jades.sort { |j| j.min_vectors.last.calculated_value }[center_index]
+median_sjade = sjades.sort { |j| j.min_vectors.last.calculated_value }[center_index]
+
+jade_min = median_jade.min_vectors.map(&:calculated_value)
+sjade_min = median_sjade.min_vectors.map(&:calculated_value)
+
 p = DE::Plotter.new
-p.add_min_value_transition('jade', min)
+p.add_min_value_transition('jade', jade_min)
+p.add_min_value_transition('sjade', sjade_min)
 p.plot_min_value_transition
 
-m = de.parameter_mean_history
-al = de.parameter_all_history
+jade_mean = median_jade.parameter_mean_history
+jade_all = median_jade.parameter_all_history
 
-p.add_parameter_transition('jade', al, m)
-# p.plot_parameter_transition(plot_only_mean: false, plot_f: false)
-p.plot_parameter_transition_2d_animation
+sjade_mean = median_sjade.parameter_mean_history
+sjade_all = median_sjade.parameter_all_history
+
+p.add_parameter_transition('jade', jade_all, jade_mean)
+p.add_parameter_transition('sjade', sjade_all, sjade_mean)
+p.plot_parameter_transition(plot_only_mean: true)
+# p.plot_parameter_transition_2d_animation

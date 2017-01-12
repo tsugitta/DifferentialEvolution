@@ -85,14 +85,16 @@ class DE::Plotter
 
           if plot_f
             plot.data << Gnuplot::DataSet.new([x, parameter_transition[:mean_parameter_transition].map(&:magnification_rate)]) do |ds|
-              ds.with = 'lines lc rgbcolor "#114444"'
+              # ds.with = 'lines lc rgbcolor "#114444"'
+              ds.with = 'lines'
               ds.title = "#{parameter_transition[:label]} F mean"
             end
           end
 
           if plot_c
             plot.data << Gnuplot::DataSet.new([x, parameter_transition[:mean_parameter_transition].map(&:use_mutated_component_rate)]) do |ds|
-              ds.with = 'lines lc rgbcolor "#441111"'
+              # ds.with = 'lines lc rgbcolor "#441111"'
+              ds.with = 'lines'
               ds.title = "#{parameter_transition[:label]} C mean"
             end
           end
