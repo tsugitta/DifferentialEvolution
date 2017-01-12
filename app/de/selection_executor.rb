@@ -5,7 +5,7 @@ class DE::SelectionExecutor
     raise 'SelectionExecutor\'s arguments must be passed' if [parents, children, f, evaluation_rest].include?(nil)
     @parents = parents
     @children = children
-    @value_assigned_parameters = parameters.dup
+    @value_assigned_parameters = parameters.map { |p| p.dup }
     @f = f
     @evaluation_rest = evaluation_rest
     @evaluation_count = 0

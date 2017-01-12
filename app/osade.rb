@@ -1,10 +1,8 @@
 require_relative './de.rb'
 require_relative './oracle_simulator/oracle_simulatable.rb'
-require_relative './concerns/parameter_transition_plottable.rb'
 
 class OSADE < DE
   include OracleSimulatable
-  include ParameterTransitionPlottable
 
   OSADE_DEFAULT_OPTION = {
     osade_success_checker: nil,
@@ -146,14 +144,5 @@ class OSADE < DE
       '\n' + "initial R: #{mutation_magnification_rate}, initial C: #{crossover_use_mutated_component_rate}",
       '\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, success checker: #{osade_success_checker.label}, history size: #{number_of_generation_parameter_result_saved}"
     ].join
-  end
-
-  def parameter_transition_plot_value
-    x_plots = (1..@generation).to_a
-
-    {
-      magnification_rate: [x_plots, @parameter_mean_history.map { |p| p.magnification_rate }],
-      use_mutated_component_rate: [x_plots, @parameter_mean_history.map { |p| p.use_mutated_component_rate}]
-    }
   end
 end

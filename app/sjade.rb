@@ -1,6 +1,5 @@
 require_relative './jade.rb'
 require_relative './oracle_simulator/oracle_simulatable.rb'
-require_relative './concerns/parameter_transition_plottable.rb'
 
 class SJADE < JADE
   SJADE_DEFAULT_OPTION = {

@@ -1,10 +1,8 @@
 require_relative './de.rb'
 require_relative './oracle_simulator/oracle_simulatable.rb'
-require_relative './concerns/parameter_transition_plottable.rb'
 
 class SHADE < DE
   include OracleSimulatable
-  include ParameterTransitionPlottable
 
   SHADE_DEFAULT_OPTION = {
     memory_size: 10,
@@ -98,14 +96,5 @@ class SHADE < DE
       '\n' + "initial R: #{mutation_magnification_rate}, initial C: #{crossover_use_mutated_component_rate}",
       '\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, memory size: #{memory_size}"
     ].join
-  end
-
-  def parameter_transition_plot_value
-    x_plots = (1..@generation).to_a * memory_size
-
-    {
-      magnification_rate: [x_plots, @parameter_memory_history[:magnification_rate].flatten],
-      use_mutated_component_rate: [x_plots, @parameter_memory_history[:use_mutated_component_rate].flatten]
-    }
   end
 end

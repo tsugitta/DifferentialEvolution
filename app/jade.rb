@@ -1,10 +1,8 @@
 require_relative './de.rb'
 require_relative './oracle_simulator/oracle_simulatable.rb'
-require_relative './concerns/parameter_transition_plottable.rb'
 
 class JADE < DE
   include OracleSimulatable
-  include ParameterTransitionPlottable
 
   JADE_DEFAULT_OPTION = {
     normal_distribution_sigma: 0.1,
@@ -13,6 +11,7 @@ class JADE < DE
   }
 
   attr_reader(*JADE_DEFAULT_OPTION.keys)
+  attr_reader :parameter_mean_history, :parameter_all_history
 
   def initialize(option = {})
     option = JADE_DEFAULT_OPTION.merge(option)
@@ -23,6 +22,7 @@ class JADE < DE
       mutation_magnification_rate,
       crossover_use_mutated_component_rate
     @parameter_mean_history = []
+    @parameter_all_history = []
   end
 
   private
@@ -33,6 +33,7 @@ class JADE < DE
 
   def save_parameter_to_history
     @parameter_mean_history << @parameter_means
+    @parameter_all_history << @parameters
   end
 
   def exec_selection
@@ -61,6 +62,10 @@ class JADE < DE
       p.calculated_value_diff < 0
     end
 
+    fail_parameters = @parameters.select do |p|
+      p.calculated_value_diff >= 0
+    end
+
     return if success_parameters.empty?
 
     c = c_to_use_new_rate_mean_weight
@@ -80,14 +85,5 @@ class JADE < DE
       '\n' + "initial R: #{mutation_magnification_rate}, initial C: #{crossover_use_mutated_component_rate}",
       '\n' + "sigma for normal: #{normal_distribution_sigma}, gamma for cauchy: #{cauchy_distribution_gamma}, c to use new mean: #{c_to_use_new_rate_mean_weight}"
     ].join
-  end
-
-  def parameter_transition_plot_value
-    x_plots = (1..@generation).to_a
-
-    {
-      magnification_rate: [x_plots, @parameter_mean_history.map { |p| p.magnification_rate }],
-      use_mutated_component_rate: [x_plots, @parameter_mean_history.map { |p| p.use_mutated_component_rate}]
-    }
   end
 end

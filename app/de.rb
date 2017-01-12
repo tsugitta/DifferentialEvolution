@@ -138,7 +138,6 @@ class DE
 
   def exec_termination_of_ending_calculation
     log_result
-    plot_min_value
   end
 
   def create_parameter
@@ -177,25 +176,6 @@ class DE
     vector: #{@min_vectors.last}
     time: #{time}s
     EOS
-  end
-
-  def plot_min_value
-    Gnuplot.open do |gp|
-      Gnuplot::Plot.new(gp) do |plot|
-        plot.title parameter_information
-        plot.xlabel 'generation'
-        plot.ylabel 'min value of vectors'
-        plot.set 'logscale y'
-
-        x_plots = (1..@generation).to_a
-
-        min_value_plots = @min_vectors.map { |v| v.calculated_value }
-        plot.data << Gnuplot::DataSet.new([x_plots, min_value_plots]) do |ds|
-          ds.with = 'lines'
-          ds.title = 'min value'
-        end
-      end
-    end
   end
 end
 
