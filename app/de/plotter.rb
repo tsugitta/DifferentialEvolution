@@ -109,7 +109,7 @@ class DE::Plotter
     Gnuplot.open do |gp|
       gp << "set nokey\n"
       gp << "set term gif animate delay 0.5\n"
-      gp << "set output \"parameter_transition.gif\"\n"
+      gp << "set output \"results/parameter_transition_#{Time.now.strftime('%Y-%m-%d_%H_%M_%S')}.gif\"\n"
       gp << "set xrange [0:1]\n"
       gp << "set yrange [0:1]\n"
 
