@@ -47,7 +47,8 @@ class DE::Plotter
         plot.xlabel 'generation'
         plot.ylabel 'value'
         plot.set 'key outside'
-        plot.set 'style fill transparent solid 0.5'
+        plot.set 'style fill transparent solid 0.3 noborder'
+        plot.set 'style circle radius 1.3'
 
         parameter_transitions.each do |parameter_transition|
           unless plot_only_mean
@@ -70,14 +71,14 @@ class DE::Plotter
             if plot_f
               plot.data << Gnuplot::DataSet.new([generation_array, f_array, rank_array]) do |ds|
                 ds.title = "#{parameter_transition[:label]} F"
-                ds.with = 'points pt 5 ps 0.3 lc palette'
+                ds.with = 'circles lc palette'
               end
             end
 
             if plot_c
               plot.data << Gnuplot::DataSet.new([generation_array, c_array, rank_array]) do |ds|
                 ds.title = "#{parameter_transition[:label]} C"
-                ds.with = 'points pt 5 ps 0.3 lc palette'
+                ds.with = 'circles lc palette'
               end
             end
           end
