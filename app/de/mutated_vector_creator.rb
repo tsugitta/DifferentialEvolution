@@ -76,12 +76,13 @@ class DE::MutatedVectorCreator
   end
 
   def select_vectors_except(parent_v, count)
-    begin
-      selected_vectors_with_rest = @vectors.sample(count + 1)
-      selected_vectors = selected_vectors_with_rest
-        .reject { |v| v == parent_v }
-        .sample(count)
-    end while selected_vectors.size < count
+    candidate_vectors = @vectors.reject { |v| v == parent_v }
+
+    if candidate_vectors.size < count
+      selected_vectors = @vectors.sample(count)
+    else
+      selected_vectors = candidate_vectors.sample(count)
+    end
 
     selected_vectors
   end
