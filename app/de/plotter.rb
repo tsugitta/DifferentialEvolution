@@ -6,7 +6,7 @@ class DE::Plotter
     }
   end
 
-  def plot_min_value_transition
+  def plot_min_value_transitions
     return if min_value_transitions.empty?
 
     Gnuplot.open do |gp|
@@ -29,16 +29,24 @@ class DE::Plotter
     end
   end
 
-  def add_parameter_transition(label, all_parameter_transition, mean_parameter_transition)
+  # line transition
+  def add_parameter_transition(label, parameter_transition)
     parameter_transitions << {
       label: label,
-      all_parameter_transition: all_parameter_transition,
-      mean_parameter_transition: mean_parameter_transition
+      values: parameter_transition
     }
   end
 
-  def plot_parameter_transition(plot_only_mean: true, plot_f: true, plot_c: true)
-    return if parameter_transitions.empty?
+  # dot transition
+  def add_parameters_transition(label, parameters_transition)
+    parameters_transitions << {
+      label: label,
+      values: parameters_transition
+    }
+  end
+
+  def plot_parameter_transitions(plot_f: true, plot_c: true)
+    return if parameter_transitions.empty? && parameters_transitions.empty?
 
     Gnuplot.open do |gp|
       Gnuplot::Plot.new(gp) do |plot|
@@ -50,54 +58,51 @@ class DE::Plotter
         plot.set 'style fill transparent solid 0.3 noborder'
         plot.set 'style circle radius 1.3'
 
-        parameter_transitions.each do |parameter_transition|
-          unless plot_only_mean
-            generation_array = []
-            f_array = []
-            c_array = []
-            rank_array = []
+        # draw dots
+        parameters_transitions.each do |parameters_transition|
+          generation_array, f_array, c_array, rank_array = [], [], [], []
 
-            parameter_transition[:all_parameter_transition].each.with_index(1) do |parameters, generation|
-              next if parameters.nil?
+          parameters_transition[:values].each.with_index(1) do |parameters, generation|
+            next if parameters.nil?
 
-              parameters.sort_by(&:calculated_value_diff).each.with_index(1) do |p, i|
-                generation_array << generation
-                f_array << p.magnification_rate
-                c_array << p.use_mutated_component_rate
-                rank_array << i
-              end
-            end
-
-            if plot_f
-              plot.data << Gnuplot::DataSet.new([generation_array, f_array, rank_array]) do |ds|
-                ds.title = "#{parameter_transition[:label]} F"
-                ds.with = 'circles lc palette'
-              end
-            end
-
-            if plot_c
-              plot.data << Gnuplot::DataSet.new([generation_array, c_array, rank_array]) do |ds|
-                ds.title = "#{parameter_transition[:label]} C"
-                ds.with = 'circles lc palette'
-              end
+            parameters.sort_by(&:calculated_value_diff).each.with_index(1) do |p, i|
+              generation_array << generation
+              f_array << p.magnification_rate
+              c_array << p.use_mutated_component_rate
+              rank_array << i
             end
           end
 
-          x = (1..parameter_transitions.first[:mean_parameter_transition].size).to_a
-
           if plot_f
-            plot.data << Gnuplot::DataSet.new([x, parameter_transition[:mean_parameter_transition].map(&:magnification_rate)]) do |ds|
-              # ds.with = 'lines lc rgbcolor "#114444"'
-              ds.with = 'lines'
-              ds.title = "#{parameter_transition[:label]} F mean"
+            plot.data << Gnuplot::DataSet.new([generation_array, f_array, rank_array]) do |ds|
+              ds.title = "#{parameters_transition[:label]} F"
+              ds.with = 'circles lc palette'
             end
           end
 
           if plot_c
-            plot.data << Gnuplot::DataSet.new([x, parameter_transition[:mean_parameter_transition].map(&:use_mutated_component_rate)]) do |ds|
-              # ds.with = 'lines lc rgbcolor "#441111"'
+            plot.data << Gnuplot::DataSet.new([generation_array, c_array, rank_array]) do |ds|
+              ds.title = "#{parameters_transition[:label]} C"
+              ds.with = 'circles lc palette'
+            end
+          end
+        end
+
+        # draw lines
+        parameter_transitions.each do |parameter_transition|
+          x = (1..parameter_transition[:values].size).to_a
+
+          if plot_f
+            plot.data << Gnuplot::DataSet.new([x, parameter_transition[:values].map(&:magnification_rate)]) do |ds|
               ds.with = 'lines'
-              ds.title = "#{parameter_transition[:label]} C mean"
+              ds.title = "#{parameter_transition[:label]} F"
+            end
+          end
+
+          if plot_c
+            plot.data << Gnuplot::DataSet.new([x, parameter_transition[:values].map(&:use_mutated_component_rate)]) do |ds|
+              ds.with = 'lines'
+              ds.title = "#{parameter_transition[:label]} C"
             end
           end
         end
@@ -105,39 +110,38 @@ class DE::Plotter
     end
   end
 
-  def plot_parameter_transition_2d_animation
-    return if parameter_transitions.empty?
+  def plot_parameter_transitions_2d_animation
+    parameters_transitions.each do |parameters_transition|
+      Gnuplot.open do |gp|
+        results_path = File.expand_path('../../results', __FILE__)
+        gp << "set nokey\n"
+        gp << "set term gif animate delay 0.5\n"
+        gp << "set output \"#{results_path}/parameter_transition_#{Time.now.strftime('%Y-%m-%d_%H_%M_%S')}_#{parameters_transition[:label].gsub("\s", '_')}.gif\"\n"
+        gp << "set xrange [0:1]\n"
+        gp << "set yrange [0:1]\n"
 
-    transition = parameter_transitions.first
+        parameters_transition[:values].size.times do |i|
+          Gnuplot::Plot.new(gp) do |plot|
+            plot.title 'parameter transition'
 
-    Gnuplot.open do |gp|
-      gp << "set nokey\n"
-      gp << "set term gif animate delay 0.5\n"
-      gp << "set output \"results/parameter_transition_#{Time.now.strftime('%Y-%m-%d_%H_%M_%S')}.gif\"\n"
-      gp << "set xrange [0:1]\n"
-      gp << "set yrange [0:1]\n"
+            plot.xlabel 'F'
+            plot.ylabel 'C'
+            plot.set 'key outside'
+            plot.set 'style fill transparent solid 0.5'
 
-      transition[:mean_parameter_transition].size.times do |i|
-        Gnuplot::Plot.new(gp) do |plot|
-          plot.title 'parameter transition'
+            parameters = parameters_transition[:values][i]
+            next if parameters.nil?
 
-          plot.xlabel 'F'
-          plot.ylabel 'C'
-          plot.set 'key outside'
-          plot.set 'style fill transparent solid 0.5'
+            parameters = parameters.sort_by(&:calculated_value_diff)
 
-          parameters = transition[:all_parameter_transition][i]
-          next if parameters.nil?
+            f_array = parameters.map { |p| p.magnification_rate }.compact
+            c_array = parameters.map { |p| p.use_mutated_component_rate }.compact
+            rank_array = (1..50).to_a
 
-          parameters = parameters.sort_by(&:calculated_value_diff)
-
-          f_array = parameters.map { |p| p.magnification_rate }.compact
-          c_array = parameters.map { |p| p.use_mutated_component_rate }.compact
-          rank_array = (1..50).to_a
-
-          plot.data << Gnuplot::DataSet.new([f_array, c_array, rank_array]) do |ds|
-            ds.title = "generation #{i + 1}"
-            ds.with = 'points pt 5 ps 1 lc palette'
+            plot.data << Gnuplot::DataSet.new([f_array, c_array, rank_array]) do |ds|
+              ds.title = "generation #{i + 1}"
+              ds.with = 'points pt 5 ps 1 lc palette'
+            end
           end
         end
       end
@@ -152,5 +156,9 @@ class DE::Plotter
 
   def parameter_transitions
     @parameter_transitions ||= []
+  end
+
+  def parameters_transitions
+    @parameters_transitions ||= []
   end
 end

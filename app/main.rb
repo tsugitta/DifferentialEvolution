@@ -16,7 +16,7 @@ options = {
   f: f,
   dimension: 20,
   number_of_vectors: 50,
-  max_generation: 2000,
+  max_generation: 200,
   max_evaluation: 300000,
 
   mutation_method: 'current-to-pbest/1',
@@ -44,7 +44,7 @@ options = {
   ratio_to_regard_as_success: 0.5
 }
 
-trial_num = 9 # Assume this is odd
+trial_num = 1 # Assume this is odd
 jades = Array.new(trial_num) { JADE.new(options) }
 sjades = Array.new(trial_num) { SJADE.new(options) }
 
@@ -61,7 +61,7 @@ sjade_min = median_sjade.min_vectors.map(&:calculated_value)
 p = DE::Plotter.new
 p.add_min_value_transition('jade', jade_min)
 p.add_min_value_transition('sjade', sjade_min)
-p.plot_min_value_transition
+# p.plot_min_value_transitions
 
 jade_mean = median_jade.parameter_mean_history
 jade_all = median_jade.parameter_all_history
@@ -69,7 +69,15 @@ jade_all = median_jade.parameter_all_history
 sjade_mean = median_sjade.parameter_mean_history
 sjade_all = median_sjade.parameter_all_history
 
-p.add_parameter_transition('jade', jade_all, jade_mean)
-p.add_parameter_transition('sjade', sjade_all, sjade_mean)
-p.plot_parameter_transition(plot_only_mean: true)
-# p.plot_parameter_transition_2d_animation
+p = DE::Plotter.new
+p.add_parameter_transition('jade', jade_mean)
+p.add_parameters_transition('jade all', jade_all)
+
+# p.plot_parameter_transitions(plot_c: false)
+
+p.plot_parameter_transitions_2d_animation
+
+p = DE::Plotter.new
+p.add_parameter_transition('jade', jade_mean)
+p.add_parameter_transition('sjade', sjade_mean)
+# p.plot_parameter_transitions(plot_c: false)
