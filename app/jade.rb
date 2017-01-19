@@ -47,13 +47,13 @@ class JADE < DE
 
   def create_parameter
     Parameter.new \
-      Random.rand_following_normal_from_0_to_1(
+      magnification_rate: Random.rand_following_cauchy_from_0_to_1(
         @parameter_means.magnification_rate,
-        normal_distribution_sigma
-      ),
-      Random.rand_following_cauchy_from_0_to_1(
-        @parameter_means.use_mutated_component_rate,
         cauchy_distribution_gamma
+      ),
+      use_mutated_component_rate: Random.rand_following_normal_from_0_to_1(
+        @parameter_means.use_mutated_component_rate,
+        normal_distribution_sigma
       )
   end
 

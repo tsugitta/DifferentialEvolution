@@ -63,13 +63,13 @@ class SHADE < DE
     memory_index = rand(memory_size)
 
     Parameter.new \
-      Random.rand_following_normal_from_0_to_1(
+      magnification_rate: Random.rand_following_cauchy_from_0_to_1(
         @magnification_rate_memory[memory_index],
-        normal_distribution_sigma
-      ),
-      Random.rand_following_cauchy_from_0_to_1(
-        @use_mutated_component_rate_memory[memory_index],
         cauchy_distribution_gamma
+      ),
+      use_mutated_component_rate: Random.rand_following_normal_from_0_to_1(
+        @use_mutated_component_rate_memory[memory_index],
+        normal_distribution_sigma
       )
   end
 
