@@ -11,7 +11,7 @@ class JADE < DE
   }
 
   attr_reader(*JADE_DEFAULT_OPTION.keys)
-  attr_reader :parameter_mean_history, :parameter_all_history
+  attr_reader :parameter_mean_history, :parameter_all_history, :parameter_success_history
 
   def initialize(option = {})
     option = JADE_DEFAULT_OPTION.merge(option)
@@ -19,9 +19,10 @@ class JADE < DE
     super(option)
 
     @parameter_means = Parameter.new \
-      mutation_magnification_rate,
-      crossover_use_mutated_component_rate
+      magnification_rate: mutation_magnification_rate,
+      use_mutated_component_rate: crossover_use_mutated_component_rate
     @parameter_mean_history = []
+    @parameter_success_history = []
     @parameter_all_history = []
   end
 
@@ -68,10 +69,16 @@ class JADE < DE
 
     return if success_parameters.empty?
 
+    new_mean = Parameter.new \
+      magnification_rate: MathCalculator.lehmer_mean(success_parameters.map(&:magnification_rate)),
+      use_mutated_component_rate: MathCalculator.arithmetic_mean(success_parameters.map(&:use_mutated_component_rate))
+
+    @parameter_success_history << new_mean
+
     c = c_to_use_new_rate_mean_weight
     @parameter_means = Parameter.new \
-      (1 - c) * @parameter_means.magnification_rate + c * MathCalculator.lehmer_mean(success_parameters.map(&:magnification_rate)),
-      (1 - c) * @parameter_means.use_mutated_component_rate + c * MathCalculator.arithmetic_mean(success_parameters.map(&:use_mutated_component_rate))
+      magnification_rate: (1 - c) * @parameter_means.magnification_rate + c * new_mean.magnification_rate,
+      use_mutated_component_rate: (1 - c) * @parameter_means.use_mutated_component_rate + c * new_mean.use_mutated_component_rate
   end
 
   def parameter_information

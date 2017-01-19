@@ -98,8 +98,8 @@ module OracleSimulatable
 
   def create_oracle_parameter(x)
     Parameter.new(
-      @oracle_function.calc(x),
-      @oracle_function.calc(x)
+      magnification_rate: @oracle_function.calc(x),
+      use_mutated_component_rate: @oracle_function.calc(x)
     )
   end
 

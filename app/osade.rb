@@ -21,8 +21,8 @@ class OSADE < DE
     super(option)
 
     @parameter_means = Parameter.new \
-      mutation_magnification_rate,
-      crossover_use_mutated_component_rate
+      magnification_rate: mutation_magnification_rate,
+      use_mutated_component_rate: crossover_use_mutated_component_rate
     @parameter_mean_history = []
 
     @parameter_history = {
@@ -69,13 +69,13 @@ class OSADE < DE
 
   def create_parameter
     Parameter.new \
-      Random.rand_following_normal_from_0_to_1(
+      magnification_rate: Random.rand_following_cauchy_from_0_to_1(
         @parameter_means.magnification_rate,
-        normal_distribution_sigma
-      ),
-      Random.rand_following_cauchy_from_0_to_1(
-        @parameter_means.use_mutated_component_rate,
         cauchy_distribution_gamma
+      ),
+      use_mutated_component_rate: Random.rand_following_normal_from_0_to_1(
+        @parameter_means.use_mutated_component_rate,
+        normal_distribution_sigma
       )
   end
 
@@ -104,7 +104,7 @@ class OSADE < DE
 
     min_magnification_rate.step(max_magnification_rate, step_width) do |f|
       min_use_mutated_component_rate.step(max_use_mutated_component_rate, step_width) do |c|
-        oracle_parameter_candidate = Parameter.new(f, c)
+        oracle_parameter_candidate = Parameter.new(magnification_rate: f, use_mutated_component_rate: c)
         producted_probability_candidate = 1
 
         success_parameters.each do |parameter|

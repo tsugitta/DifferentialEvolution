@@ -142,8 +142,8 @@ class DE
 
   def create_parameter
     Parameter.new \
-      mutation_magnification_rate,
-      crossover_use_mutated_component_rate
+      magnification_rate: mutation_magnification_rate,
+      use_mutated_component_rate: crossover_use_mutated_component_rate
   end
 
   def use_archive?
