@@ -28,7 +28,7 @@ class BenchmarkFunction::F4 < BenchmarkFunction
   end
 
   def z(v)
-    osz = h.t_osz(v)
+    osz = h.t_osz(v - x_opt(v.size))
     osz.map.with_index do |e, i|
       s = 10**(0.5 * i / (dim(v) - 1))
       s *= 10 if e > 0 && i.even?

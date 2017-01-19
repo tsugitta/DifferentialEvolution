@@ -4,7 +4,7 @@ class BenchmarkFunction::F3 < BenchmarkFunction
     check_vector_type(v)
 
     d = v.size
-    z = h.lambda(dim: d, alpha: 10) * h.t_asy(h.t_osz(v), beta: 0.2)
+    z = h.lambda(dim: d, alpha: 10) * h.t_asy(h.t_osz(v - x_opt(v.size)), beta: 0.2)
     calculated_value = \
       10 * (d - z.map { |e| Math.cos(2 * Math::PI * e) }.inject(:+)) + z.norm**2 + min
 

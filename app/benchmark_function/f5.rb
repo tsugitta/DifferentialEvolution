@@ -1,9 +1,5 @@
 # Linear Slope
 class BenchmarkFunction::F5 < BenchmarkFunction
-  def initialize(dim:)
-    @dim = dim
-  end
-
   def calc(v, min: 0)
     check_vector_type(v)
 
@@ -28,18 +24,18 @@ class BenchmarkFunction::F5 < BenchmarkFunction
 
   def s(v)
     v.map.with_index do |e, i|
-      h.sign(x_opt[i]) * 10**(i / (@dim - 1))
+      h.sign(x_opt(v.size)[i]) * 10**(i / (v.size - 1))
     end
   end
 
   def z(v)
     v.map.with_index do |e, i|
-      next e if x_opt[i] * e < 5**2
-      x_opt[i]
+      next e if x_opt(v.size)[i] * e < 5**2
+      x_opt(v.size)[i]
     end
   end
 
-  def x_opt
-    @x_opt ||= 5 * h.one_plus_minus(dim: @dim)
+  def x_opt(dim)
+    @x_opt ||= 5 * h.one_plus_minus(dim: dim)
   end
 end

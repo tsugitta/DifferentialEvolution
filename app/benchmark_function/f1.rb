@@ -2,8 +2,7 @@
 class BenchmarkFunction::F1 < BenchmarkFunction
   def calc(v, min: 0)
     check_vector_type(v)
-
-    calculated_value = v.norm ** 2 + min
+    calculated_value = (v - x_opt(v.size)).norm ** 2 + min
 
     check_calculated_value_type(calculated_value)
     calculated_value
