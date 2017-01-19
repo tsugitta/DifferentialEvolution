@@ -57,6 +57,7 @@ class DE::Plotter
         plot.set 'key outside'
         plot.set 'style fill transparent solid 0.3 noborder'
         plot.set 'style circle radius 1.3'
+        plot.set 'yrange [0:1]'
 
         # draw dots
         parameters_transitions.each do |parameters_transition|
