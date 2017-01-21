@@ -1,5 +1,5 @@
 class BenchmarkFunction::ShapeViewer
-  DOT_COUNT_ON_A_POSITIVE_LINE = 200
+  DOT_COUNT_ON_A_POSITIVE_LINE = 100
 
   def show(f:, max: 30, map: false)
     Gnuplot.open do |gp|
@@ -13,7 +13,8 @@ class BenchmarkFunction::ShapeViewer
         plot.set "style fill  transparent solid 0.60 border"
         # show 2d mapping
         plot.set "view map" if map
-
+        plot.set 'contour'
+        plot.set 'cntrparam levels auto 1000'
         xs, ys, zs = [], [], []
 
         d = DOT_COUNT_ON_A_POSITIVE_LINE
@@ -26,7 +27,8 @@ class BenchmarkFunction::ShapeViewer
 
             xs << x
             ys << y
-            zs << f.calc(v)
+            f_value = f.calc(v)
+            zs << f_value
           end
         end
 
@@ -68,7 +70,7 @@ class BenchmarkFunction::ShapeViewer
         # plot.set 'format z "%1.1e"'
 
         d = DOT_COUNT_ON_A_POSITIVE_LINE
-        
+
         y = 0
         xs = (-d..d).map { |i| max.to_f * i.to_f / d.to_f }
         zs = xs.map { |x| f.calc(Vector[x, y]) }
