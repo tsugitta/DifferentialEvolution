@@ -1,5 +1,5 @@
 class BenchmarkFunction::ShapeViewer
-  DOT_COUNT_ON_A_POSITIVE_LINE = 100
+  DOT_COUNT_ON_A_POSITIVE_LINE = 200
 
   def show(f:, max: 30, map: false)
     Gnuplot.open do |gp|
@@ -19,8 +19,9 @@ class BenchmarkFunction::ShapeViewer
         d = DOT_COUNT_ON_A_POSITIVE_LINE
         (-d..d).each do |i|
           (-d..d).each do |j|
-            x = max.to_f * i / d
-            y = max.to_f * j / d
+            x = max.to_f * i.to_f / d.to_f
+            y = max.to_f * j.to_f / d.to_f
+            # binding.pry
             v = Vector[x, y]
 
             xs << x
@@ -32,6 +33,49 @@ class BenchmarkFunction::ShapeViewer
         plot.data << Gnuplot::DataSet.new( [xs, ys, zs] ) do |ds|
           ds.with = "pm3d"
           ds.notitle
+        end
+      end
+    end
+  end
+
+  # show 2d graph with fixing one axis value to 0
+  def show_with_2d(f:, max: 30)
+    Gnuplot.open do |gp|
+      Gnuplot::Plot.new(gp) do |plot|
+        plot.title "#{f.label} fixed x"
+        plot.xlabel 'y'
+        plot.ylabel 'value'
+        # plot.set 'format z "%1.1e"'
+
+        d = DOT_COUNT_ON_A_POSITIVE_LINE
+
+        x = 0
+        ys = (-d..d).map { |i| max.to_f * i.to_f / d.to_f }
+        zs = ys.map { |y| f.calc(Vector[x, y]) }
+
+        plot.data << Gnuplot::DataSet.new([ys, zs]) do |ds|
+          ds.with = 'lines'
+          ds.title = "value"
+        end
+      end
+    end
+
+    Gnuplot.open do |gp|
+      Gnuplot::Plot.new(gp) do |plot|
+        plot.title "#{f.label} fixed y"
+        plot.xlabel 'x'
+        plot.ylabel 'value'
+        # plot.set 'format z "%1.1e"'
+
+        d = DOT_COUNT_ON_A_POSITIVE_LINE
+        
+        y = 0
+        xs = (-d..d).map { |i| max.to_f * i.to_f / d.to_f }
+        zs = xs.map { |x| f.calc(Vector[x, y]) }
+
+        plot.data << Gnuplot::DataSet.new([xs, zs]) do |ds|
+          ds.with = 'lines'
+          ds.title = "value"
         end
       end
     end
