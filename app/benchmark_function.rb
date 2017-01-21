@@ -1,4 +1,8 @@
 class BenchmarkFunction
+  def initialize(min_is_at_zero: false)
+    @min_is_at_zero = min_is_at_zero
+  end
+
   def option
     {
       initial_value_min: -5,
@@ -22,7 +26,11 @@ class BenchmarkFunction
 
   def x_opt(dim)
     @x_opt ||= begin
-      array = Array.new(dim) { (rand - 0.5) * (4 / 0.5) }
+      if @min_is_at_zero
+        array = Array.new(dim) { 0 }
+      else
+        array = Array.new(dim) { (rand - 0.5) * (4 / 0.5) }
+      end
       Vector.elements(array, false)
     end
   end
