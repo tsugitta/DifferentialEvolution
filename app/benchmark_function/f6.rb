@@ -1,12 +1,12 @@
 # Attractive Sector
 class BenchmarkFunction::F6 < BenchmarkFunction
-  def calc(v, min: 0)
+  def calc(v)
     check_vector_type(v)
 
     z = z(v)
     s = s(z)
     sum = (0..z.size-1).map { |i| (s[i] * z[i]) ** 2 }.inject(:+)
-    calculated_value = h.t_osz(sum ** 0.9) + min
+    calculated_value = h.t_osz(sum ** 0.9) + @min
 
     check_calculated_value_type(calculated_value)
     calculated_value

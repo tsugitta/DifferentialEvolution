@@ -1,12 +1,12 @@
 # Linear Slope
 class BenchmarkFunction::F5 < BenchmarkFunction
-  def calc(v, min: 0)
+  def calc(v)
     check_vector_type(v)
 
     s = s(v)
     z = z(v)
     calculated_value = \
-      v.map.with_index { |e, i| 5 * s[i].abs - s[i] * z[i] }.inject(:+) + min
+      v.map.with_index { |e, i| 5 * s[i].abs - s[i] * z[i] }.inject(:+) + @min
 
     check_calculated_value_type(calculated_value)
     calculated_value

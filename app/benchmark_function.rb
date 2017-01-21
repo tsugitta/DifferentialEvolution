@@ -1,6 +1,9 @@
 class BenchmarkFunction
-  def initialize(min_is_at_zero: false)
+  attr_reader :min
+
+  def initialize(min_is_at_zero: false, min: 0)
     @min_is_at_zero = min_is_at_zero
+    @min = min
   end
 
   def option

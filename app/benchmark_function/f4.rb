@@ -1,13 +1,13 @@
 # Buche-Rastrigin
 class BenchmarkFunction::F4 < BenchmarkFunction
-  def calc(v, min: 0)
+  def calc(v)
     check_vector_type(v)
 
     z = z(v)
     # also needs penalty function
     calculated_value = \
       10 * (dim(v) - z.map { |e| Math.cos(2 * Math::PI * e) }.inject(:+)) + \
-      z.norm**2 + 100 * h.penalty(v) + min
+      z.norm**2 + 100 * h.penalty(v) + @min
 
     check_calculated_value_type(calculated_value)
     calculated_value
