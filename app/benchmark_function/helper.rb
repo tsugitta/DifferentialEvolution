@@ -45,11 +45,22 @@ module BenchmarkFunction::Helper
 
     # T_osz
     def t_osz(vector)
-      vector.map do |e|
+      if vector.class == Float
+        is_one_dim = true
+        vector = Vector.elements([vector], false)
+      end
+
+      res_vector = vector.map do |e|
         sin1 = Math.sin(c_1(e) * hat(e))
         sin2 = Math.sin(c_2(e) * hat(e))
         sign(e) * Math.exp(hat(e) + 0.049 * (sin1 + sin2))
       end
+
+      if is_one_dim
+        return res_vector.first
+      end
+
+      res_vector
     end
 
     # used in T_osz
