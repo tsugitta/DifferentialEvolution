@@ -6,12 +6,12 @@ class DE::Plotter
     }
   end
 
-  def plot_min_value_transitions
+  def plot_min_value_transitions(title)
     return if min_value_transitions.empty?
 
     Gnuplot.open do |gp|
       Gnuplot::Plot.new(gp) do |plot|
-        plot.title 'min value transition'
+        plot.title title
         plot.xlabel 'generation'
         plot.ylabel 'value'
         plot.set 'logscale y'
