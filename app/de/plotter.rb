@@ -13,7 +13,7 @@ class DE::Plotter
       Gnuplot::Plot.new(gp) do |plot|
         plot.title title
         plot.xlabel 'generation'
-        plot.ylabel 'value'
+        plot.ylabel 'min'
         plot.set 'logscale y'
         plot.set 'format y "%1.1e"'
         plot.set 'key outside'
@@ -23,7 +23,7 @@ class DE::Plotter
         min_value_transitions.each do |min_value_transition|
           plot.data << Gnuplot::DataSet.new([x, min_value_transition[:min_values]]) do |ds|
             ds.with = 'lines'
-            ds.title = "#{min_value_transition[:label]} min value"
+            ds.title = min_value_transition[:label]
           end
         end
       end
@@ -46,12 +46,12 @@ class DE::Plotter
     }
   end
 
-  def plot_parameter_transitions(plot_f: true, plot_c: true)
+  def plot_parameter_transitions(title:, plot_f: true, plot_c: true)
     return if parameter_transitions.empty? && parameters_transitions.empty?
 
     Gnuplot.open do |gp|
       Gnuplot::Plot.new(gp) do |plot|
-        plot.title 'parameter transition'
+        plot.title title
 
         plot.xlabel 'generation'
         plot.ylabel 'value'
