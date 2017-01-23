@@ -18,18 +18,6 @@ class RJADE < JADE
   end
 
   def update_parameters
-    f_weighted_diff = 0
-    c_weighted_diff = 0
-
-    @parameters.each do |p|
-      f_weighted_diff = -p.calculated_value_diff * p.magnification_rate
-      c_weighted_diff = -p.calculated_value_diff
-      # weighted_diff *= weight if diff.negative?
-      p.calculated_value_diff
-    end
-  end
-
-  def update_parameters
     success_parameters = @parameters.sort_by(&:calculated_value_diff).select { |p| p.calculated_value_diff < 0 }
     fail_parameters = @parameters.sort_by(&:calculated_value_diff).select { |p| p.calculated_value_diff >= 0 }
 
@@ -68,6 +56,7 @@ class RJADE < JADE
     unless fail_diff_sum == 0
       fail_c_mean = fail_c_sum / fail_diff_sum
       fail_f_mean = fail_f_square_sum / fail_f_sum
+      # fail_f_mean = fail_f_sum / fail_diff_sum
       # f_mean = f_sum / diff_sum
     end
 
