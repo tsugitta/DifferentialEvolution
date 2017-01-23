@@ -14,7 +14,7 @@ class BenchmarkFunction::ShapeViewer
         # show 2d mapping
         plot.set "view map" if map
         plot.set 'contour'
-        plot.set 'cntrparam levels auto 1000'
+        plot.set 'cntrparam levels auto 10000'
         xs, ys, zs = [], [], []
 
         d = DOT_COUNT_ON_A_POSITIVE_LINE

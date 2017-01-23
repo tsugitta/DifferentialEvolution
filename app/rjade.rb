@@ -1,20 +1,32 @@
 require_relative './jade.rb'
 require_relative './oracle_simulator/oracle_simulatable.rb'
 
-class SJADE < JADE
-  SJADE_DEFAULT_OPTION = {
+class RJADE < JADE
+  RJADE_DEFAULT_OPTION = {
     weight: 0.1
   }
 
-  attr_reader(*SJADE_DEFAULT_OPTION.keys)
+  attr_reader(*RJADE_DEFAULT_OPTION.keys)
   attr_reader :parameter_fail_history
 
   def initialize(option = {})
-    option = SJADE_DEFAULT_OPTION.merge(option)
+    option = RJADE_DEFAULT_OPTION.merge(option)
 
     super(option)
 
     @parameter_fail_history = []
+  end
+
+  def update_parameters
+    f_weighted_diff = 0
+    c_weighted_diff = 0
+
+    @parameters.each do |p|
+      f_weighted_diff = -p.calculated_value_diff * p.magnification_rate
+      c_weighted_diff = -p.calculated_value_diff
+      # weighted_diff *= weight if diff.negative?
+      p.calculated_value_diff
+    end
   end
 
   def update_parameters
@@ -60,6 +72,7 @@ class SJADE < JADE
     end
 
     if c_mean && fail_c_mean
+      s_rate = success_parameters.size / @parameters.size
       res_c_mean = c_mean + (c_mean - fail_c_mean) * weight
       res_f_mean = f_mean + (f_mean - fail_f_mean) * weight
     elsif c_mean
@@ -68,6 +81,9 @@ class SJADE < JADE
     elsif fail_c_mean
       res_c_mean = @parameter_means.use_mutated_component_rate + (@parameter_means.use_mutated_component_rate - fail_c_mean) * weight
       res_f_mean = @parameter_means.magnification_rate + (@parameter_means.magnification_rate - fail_f_mean) * weight
+    else
+      res_c_mean = @parameter_means.use_mutated_component_rate
+      res_f_mean = @parameter_means.magnification_rate
     end
     # res_c_mean = c_mean
     # res_f_mean = f_mean

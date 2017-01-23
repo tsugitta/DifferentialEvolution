@@ -16,6 +16,7 @@ class DE::Plotter
         plot.ylabel 'value'
         plot.set 'logscale y'
         plot.set 'format y "%1.1e"'
+        plot.set 'key outside'
 
         x = (1..min_value_transitions.first[:min_values].size).to_a
 

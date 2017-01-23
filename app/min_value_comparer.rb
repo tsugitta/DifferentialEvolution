@@ -4,7 +4,7 @@ require_relative './de.rb'
 require_relative './de/plotter.rb'
 require_relative './jade.rb'
 require_relative './shade.rb'
-require_relative './sjade.rb'
+require_relative './rjade.rb'
 
 if %w(c console).include?(ARGV.first)
   binding.pry
@@ -40,36 +40,39 @@ fs.each do |f|
     mutation_magnification_rate: 0.5,
     crossover_use_mutated_component_rate: 0.5,
 
-    # JADE, SHADE, SJADE options:
+    # JADE, SHADE, RJADE options:
     normal_distribution_sigma: 0.1,
     cauchy_distribution_gamma: 0.1,
 
-    # JADE, SJADE options:
+    # JADE, RJADE options:
     c_to_use_new_rate_mean_weight: 0.1,
 
     # SHADE options:
     memory_size: 5,
 
-    # SJADE options:
+    # RJADE options:
     weight: 0.2
   }
 
-  trial_num = 5 # Assume this is odd
-  jades = Array.new(trial_num) { JADE.new(options) }
-  sjades = Array.new(trial_num) { SJADE.new(options) }
-
-  jades.each(&:exec)
-  sjades.each(&:exec)
-
+  trial_num = 15 # Assume this is odd
   center_index = (trial_num - 1) / 2
-  median_jade = jades.sort { |j| j.min_vectors.last.calculated_value }[center_index]
-  median_sjade = sjades.sort { |j| j.min_vectors.last.calculated_value }[center_index]
-
-  jade_min = median_jade.min_vectors.map(&:calculated_value)
-  sjade_min = median_sjade.min_vectors.map(&:calculated_value)
-
   p = DE::Plotter.new
+
+  jades = Array.new(trial_num) { JADE.new(options) }
+  jades.each(&:exec)
+  median_jade = jades.sort { |j| j.min_vectors.last.calculated_value }[center_index]
+  jade_min = median_jade.min_vectors.map(&:calculated_value)
   p.add_min_value_transition('jade', jade_min)
-  p.add_min_value_transition('sjade', sjade_min)
+
+  0.step(1, 0.2) do |weight|
+    weight = weight.round(1)
+    weight_changed_options = options.merge(weight: weight)
+    rjades = Array.new(trial_num) { RJADE.new(weight_changed_options) }
+    rjades.each(&:exec)
+    median_rjade = rjades.sort { |j| j.min_vectors.last.calculated_value }[center_index]
+    rjade_min = median_rjade.min_vectors.map(&:calculated_value)
+    p.add_min_value_transition("rjade #{weight}", rjade_min)
+  end
+
   p.plot_min_value_transitions("#{f.label} min")
 end
