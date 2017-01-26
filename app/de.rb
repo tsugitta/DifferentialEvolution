@@ -14,7 +14,7 @@ class DE
     archived_vectors_size: 50,
   }
 
-  attr_reader :f, :vectors, :min_vectors, :time, :generation, :evaluation_count
+  attr_reader :f, :vectors, :min_vectors, :archived_vectors, :time, :generation, :evaluation_count
   attr_reader(*DEFAULT_OPTION.keys)
 
   def initialize(option = {})
