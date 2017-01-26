@@ -24,7 +24,6 @@ class DE
     set_option(DEFAULT_OPTION.merge(f_option).merge(option))
 
     @archived_vectors = [] if use_archive?
-    set_de_executors
   end
 
   def exec
@@ -56,15 +55,8 @@ class DE
     end
   end
 
-  def set_de_executors
-    @initial_vector_creator_klass = DE::InitialVectorCreator
-    @mutated_vector_creator_klass = DE::MutatedVectorCreator
-    @crossover_executor_klass = DE::CrossoverExecutor
-    @selection_executor_klass = DE::SelectionExecutor
-  end
-
   def set_initial_vectors
-    @vectors = @initial_vector_creator_klass.new(
+    @vectors = DE::InitialVectorCreator.new(
       dimension: dimension,
       min: initial_value_min,
       max: initial_value_max
@@ -85,7 +77,7 @@ class DE
   end
 
   def exec_mutation
-    mutated_vector_creator = @mutated_vector_creator_klass.new \
+    mutated_vector_creator = DE::MutatedVectorCreator.new \
       @vectors,
       parameters: @parameters,
       mutation_method: mutation_method,
@@ -98,7 +90,7 @@ class DE
   end
 
   def exec_crossover
-    @children_vectors = @crossover_executor_klass.new(
+    @children_vectors = DE::CrossoverExecutor.new(
       parent_vectors: @vectors,
       mutated_vectors: @mutated_vectors,
       parameters: @parameters,
@@ -107,7 +99,7 @@ class DE
   end
 
   def exec_selection
-    selection_executor = @selection_executor_klass.new \
+    selection_executor = DE::SelectionExecutor.new \
       parents: @vectors,
       children: @children_vectors,
       parameters: @parameters,

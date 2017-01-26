@@ -32,13 +32,6 @@ class SHADE < DE
     }
   end
 
-  def set_de_executors
-    @initial_vector_creator_klass = DE::InitialVectorCreator
-    @mutated_vector_creator_klass = DE::ParameterChangeableMutatedVectorCreator
-    @crossover_executor_klass = DE::ParameterChangeableCrossoverExecutor
-    @selection_executor_klass = DE::SelectionExecutor
-  end
-
   def exec_initialization_before_beginning_generation
     save_parameter_to_history
   end
