@@ -85,23 +85,13 @@ class DE
   end
 
   def exec_mutation
-    mutated_vector_creator = case mutation_method
-    when 'current-to-pbest/1'
-      @mutated_vector_creator_klass.new \
-        @vectors,
-        parameters: @parameters,
-        mutation_method: mutation_method,
-        p: p_to_use_current_to_pbest_mutation,
-        f: f,
-        archived_vectors: @archived_vectors
-    when 'rand/1', 'rand/2'
-      @mutated_vector_creator_klass.new \
-        @vectors,
-        parameters: @parameters,
-        mutation_method: mutation_method
-    else
-      raise "Invalid mutation method: '#{mutation_method}'"
-    end
+    mutated_vector_creator = @mutated_vector_creator_klass.new \
+      @vectors,
+      parameters: @parameters,
+      mutation_method: mutation_method,
+      p: p_to_use_current_to_pbest_mutation,
+      f: f,
+      archived_vectors: @archived_vectors
 
     @mutated_vectors = mutated_vector_creator.create
     @evaluation_count += mutated_vector_creator.evaluation_count
@@ -147,7 +137,7 @@ class DE
   end
 
   def use_archive?
-    ['current-to-pbest/1'].include?(mutation_method)
+    DE::MutatedVectorCreator::USE_ARCHIVE_METHODS.include?(mutation_method)
   end
 
   def update_archives_with(new_archives)

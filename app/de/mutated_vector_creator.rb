@@ -1,6 +1,10 @@
 class DE::MutatedVectorCreator
   attr_reader :evaluation_count
 
+  USE_ARCHIVE_METHODS = [
+    'current-to-pbest/1'
+  ].freeze
+
   def initialize(vectors, parameters: nil, mutation_method: nil, p: nil, f: nil, archived_vectors: nil)
     @vectors = vectors
     @parameters = parameters
