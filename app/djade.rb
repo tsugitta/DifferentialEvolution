@@ -1,16 +1,16 @@
 require_relative './jade.rb'
 require_relative './oracle_simulator/oracle_simulatable.rb'
 
-class RJADE < JADE
-  RJADE_DEFAULT_OPTION = {
+class DJADE < JADE
+  DJADE_DEFAULT_OPTION = {
     weight: 0.1
   }
 
-  attr_reader(*RJADE_DEFAULT_OPTION.keys)
+  attr_reader(*DJADE_DEFAULT_OPTION.keys)
   attr_reader :parameter_fail_history
 
   def initialize(option = {})
-    option = RJADE_DEFAULT_OPTION.merge(option)
+    option = DJADE_DEFAULT_OPTION.merge(option)
 
     super(option)
 
@@ -36,8 +36,8 @@ class RJADE < JADE
 
     unless diff_sum == 0
       c_mean = c_sum / diff_sum
-      f_mean = f_square_sum / f_sum
-      # f_mean = f_sum / diff_sum
+      # f_mean = f_square_sum / f_sum
+      f_mean = f_sum / diff_sum
     end
 
     best_parameter_in_fail_parameters = fail_parameters.first
@@ -55,8 +55,8 @@ class RJADE < JADE
 
     unless fail_diff_sum == 0
       fail_c_mean = fail_c_sum / fail_diff_sum
-      fail_f_mean = fail_f_square_sum / fail_f_sum
-      # fail_f_mean = fail_f_sum / fail_diff_sum
+      # fail_f_mean = fail_f_square_sum / fail_f_sum
+      fail_f_mean = fail_f_sum / fail_diff_sum
       # f_mean = f_sum / diff_sum
     end
 
