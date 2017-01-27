@@ -36,8 +36,8 @@ class DJADE < JADE
 
     unless diff_sum == 0
       c_mean = c_sum / diff_sum
-      # f_mean = f_square_sum / f_sum
-      f_mean = f_sum / diff_sum
+      f_mean = f_square_sum / f_sum
+      # f_mean = f_sum / diff_sum
     end
 
     best_parameter_in_fail_parameters = fail_parameters.first
@@ -55,8 +55,8 @@ class DJADE < JADE
 
     unless fail_diff_sum == 0
       fail_c_mean = fail_c_sum / fail_diff_sum
-      # fail_f_mean = fail_f_square_sum / fail_f_sum
-      fail_f_mean = fail_f_sum / fail_diff_sum
+      fail_f_mean = fail_f_square_sum / fail_f_sum
+      # fail_f_mean = fail_f_sum / fail_diff_sum
       # f_mean = f_sum / diff_sum
     end
 
